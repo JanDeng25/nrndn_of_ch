@@ -91,7 +91,6 @@ private:
         node->prev->next = node->next;
         node->next->prev = node->prev;
     }
-    // 将结点插入头部
     void attach(Node<K,T>* node){
         node->prev = head_;
         node->next = head_->next;
@@ -100,6 +99,7 @@ private:
     }
 private:
     std::unordered_map<K,Node<K,T>*> hashmap_;
+
     //hash_map<K, Node<K,T>* > hashmap_;
     vector<Node<K,T>* > free_entries_; // 存储可用结点的地址
     Node<K,T> *head_, *tail_;
