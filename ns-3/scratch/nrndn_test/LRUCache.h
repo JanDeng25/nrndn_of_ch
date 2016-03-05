@@ -90,7 +90,7 @@ private:
         node->prev->next = node->next;
         node->next->prev = node->prev;
     }
-    // 灏嗙粨鐐规彃鍏ュご閮�    void attach(Node<K,T>* node){
+    void attach(Node<K,T>* node){
         node->prev = head_;
         node->next = head_->next;
         head_->next = node;
