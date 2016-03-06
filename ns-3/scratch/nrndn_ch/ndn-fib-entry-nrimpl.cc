@@ -41,6 +41,10 @@ EntryNrImpl::~EntryNrImpl ()
 std::unordered_map<std::string,uint32_t  >::iterator
 EntryNrImpl::AddIncomingNeighbors(std::string lane,uint32_t ttl)
 {
+	if(m_incomingnbs.empty()){
+		m_incomingnbs.insert(incomingnb,std::pair<std::string,uint32_t>(lane,ttl));
+		return m_incomingnbs.begin();
+	}
 	//AddNeighborTimeoutEvent(id);
 	std::unordered_map< std::string,uint32_t >::iterator incomingnb = m_incomingnbs.find(lane);
 
