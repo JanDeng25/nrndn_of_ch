@@ -114,6 +114,12 @@ NrFibImpl::RemoveFromAll (Ptr<Face> face){
 void
 NrFibImpl::AddFibEntry (const Ptr<const Name> &prefix, std::string lane,uint32_t ttl)
 {
+	if(m_fibContainer.empty()){
+		Ptr<EntryNrImpl> entry = ns3::Create<EntryNrImpl>(this,prefix,m_cleanInterval);
+		Ptr<Entry> fibEntry = DynamicCast<Entry>(entry);
+		m_fibContainer.push_back(fibEntry);
+	}
+	else{
 	std::vector<Ptr<Entry> >::iterator fib=m_fibContainer.begin();
 	for(;fib!=m_fibContainer.end();++fib)
 		{
@@ -135,6 +141,7 @@ NrFibImpl::AddFibEntry (const Ptr<const Name> &prefix, std::string lane,uint32_t
 	Ptr<EntryNrImpl> entry = ns3::Create<EntryNrImpl>(this,prefix,m_cleanInterval);
 	Ptr<Entry> fibEntry = DynamicCast<Entry>(entry);
 	m_fibContainer.push_back(fibEntry);
+	}
     return;
 }
 
