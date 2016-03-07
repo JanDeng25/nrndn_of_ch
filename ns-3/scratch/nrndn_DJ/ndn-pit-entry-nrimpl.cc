@@ -25,10 +25,10 @@ EntryNrImpl::EntryNrImpl(Pit &container, Ptr<const Interest> header,Ptr<fib::Ent
 	:Entry(container,header,fibEntry)
 	 //m_infaceTimeout(cleanInterval)
 {
-	NS_ASSERT_MSG(header->GetName().size()<2,"In EntryNrImpl, "
+	/*NS_ASSERT_MSG(header->GetName().size()<2,"In EntryNrImpl, "
 			"each name of interest should be only one component, "
 			"for example: /routeSegment, do not use more than one slash, "
-			"such as/route1/route2/...");
+			"such as/route1/route2/...");*/
 	m_interest_name=header->GetName().toUri();
 }
 

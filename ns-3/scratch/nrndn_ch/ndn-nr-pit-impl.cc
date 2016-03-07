@@ -117,6 +117,12 @@ bool NrPitImpl::UpdatePit(const std::vector<std::string>& route,const uint32_t& 
 //add by DJ on Jan 4,2016:update pit
 bool NrPitImpl::UpdatePit(std::string lane,Ptr<Interest> interest)
 {
+	if(m_fibContainer.empty()){
+			Ptr<EntryNrImpl> entry = ns3::Create<EntryNrImpl>(this,prefix,m_cleanInterval);
+			Ptr<Entry> fibEntry = DynamicCast<Entry>(entry);
+			m_fibContainer.push_back(fibEntry);
+		}
+	else{
 	//std::ostringstream os;
 	std::vector<Ptr<pit::Entry> >::iterator pit=m_pitContainer.begin();
 	//Ptr<Entry> entry = *pit;
@@ -151,6 +157,7 @@ bool NrPitImpl::UpdatePit(std::string lane,Ptr<Interest> interest)
 		Ptr<Entry> pitEntry = DynamicCast<Entry>(fentry);
 		m_pitContainer.push_back(pitEntry);
 
+	}
 
 	//NS_LOG_UNCOND("update pit:"<<os.str());
 	//NS_LOG_DEBUG("update pit:"<<os.str());
