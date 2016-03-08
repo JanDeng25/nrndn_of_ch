@@ -113,7 +113,7 @@ private:
 	  Name m_prefix;
 	  std::map<uint32_t,std::string> interestSent;
 	  std::map<uint32_t, double> msgTime;
-	  string m_oldLane;
+	  std::string m_oldLane;
 
 	  //Ptr<ndn::pit::nrndn::NrPitImpl> m_pit;
 	  //Ptr<ndn::fib::nrndn::NrFibImpl> m_fib;

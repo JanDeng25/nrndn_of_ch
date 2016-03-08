@@ -155,7 +155,7 @@ void nrConsumer::OnData(Ptr<const Data> data)
 
 	NS_ASSERT_MSG(packetPayloadSize == m_virtualPayloadSize,"packetPayloadSize is not equal to "<<m_virtualPayloadSize);
 
-	map<uint32_t, string>::iterator it = interestSent.find(signature);
+	map<uint32_t, std::string>::iterator it = interestSent.find(signature);
 	if(it != interestSent.end())
 	{
 		nrUtils::IncreaseInterestedNodeCounter();
