@@ -108,8 +108,7 @@ void nrConsumer::SendPacket()
 	  if (!m_active) return;
 
 	  uint32_t num = GetNode()->GetId() % 3 + 1;
-	  const std::string str = "";
-	  m_prefix = new Name(str);
+	  Name m_prefix;
 	  m_prefix.appendNumber(num);
 
 	  Ptr<Interest> interest = Create<Interest> (Create<Packet>(m_virtualPayloadSize));
@@ -179,6 +178,7 @@ void nrConsumer::laneChange(std::string oldLane, std::string newLane)
 	  cout<<m_node->GetId()<<" lane changed from "<<oldLane<<" to "<<newLane<<endl;
 
 	  uint32_t num = GetNode()->GetId() % 3 + 1;
+	  Name m_prefix;
 	  m_prefix.appendNumber(num);
 
 	  Ptr<Interest> interest = Create<Interest> (Create<Packet>(m_virtualPayloadSize));

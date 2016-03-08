@@ -119,7 +119,7 @@ void nrProducer::sendResourcePacket()
 {
 	////m_sensor->getLane();
 	if (!m_active)  return;
-
+	Name m_prefix;
 	uint32_t num = GetNode()->GetId() % 3 + 1;
 	//std::cout<<"siu:"<<GetNode()->GetId()<<"sendResourcePacket:"<<m_prefix.toUri()<<std::endl;
 	m_prefix.appendNumber(num);
