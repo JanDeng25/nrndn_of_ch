@@ -108,6 +108,7 @@ void nrConsumer::SendPacket()
 	  if (!m_active) return;
 
 	  uint32_t num = GetNode()->GetId() % 3 + 1;
+	  m_prefix = new Name("");
 	  m_prefix.appendNumber(num);
 
 	  Ptr<Interest> interest = Create<Interest> (Create<Packet>(m_virtualPayloadSize));
