@@ -229,7 +229,7 @@ private:
 
 	Time m_freshness;
 
-	 string m_oldLane;
+	 std::string m_oldLane;
 };
 } /* namespace nrndn */
 } /* namespace fw */

@@ -142,7 +142,7 @@ void nrProducer::sendResourcePacket()
 	nrheader.setSourceId(GetNode()->GetId() );
 	nrheader.setX(m_sensor->getX());
 	nrheader.setY(m_sensor->getY());
-	string lane = m_sensor->getLane();
+	std::string lane = m_sensor->getLane();
 	nrheader.setCurrentLane(lane);
 	nrheader.setPreLane(lane);
 	Ptr<Packet> newPayload	= Create<Packet> ();

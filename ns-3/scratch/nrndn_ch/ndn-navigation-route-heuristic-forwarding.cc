@@ -1013,7 +1013,7 @@ void NavigationRouteHeuristic::PrepareInterestPacket(Ptr<Interest> interest)
 
 	Ptr<ndn::fib::nrndn::EntryNrImpl> nexthop;
 	nexthop = DynamicCast<ndn::fib::nrndn::EntryNrImpl>(m_fib->Find(interest->GetName()));
-	std:: string hop;
+	std::string hop;
 	hop = (nexthop->getIncomingnbs()).begin()->first	;
 	nrheader.setCurrentLane(hop);
 	nrPayload->AddHeader(nrheader);
@@ -1116,7 +1116,7 @@ void NavigationRouteHeuristic::SendHello()
 		NS_LOG_FUNCTION(this);
 	const double& x		= m_sensor->getX();
 	const double& y		= m_sensor->getY();
-	const string& LaneName=m_sensor->getLane();
+	const std::string & LaneName=m_sensor->getLane();
 	//1.setup name
 	Ptr<Name> name = ns3::Create<Name>('/'+LaneName);
 
