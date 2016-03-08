@@ -111,7 +111,7 @@ private:
 
 	  uint32_t m_virtualPayloadSize;
 	  Name m_prefix;
-	  std::map<uint32_t,string> interestSent;
+	  std::map<uint32_t,std::string> interestSent;
 	  std::map<uint32_t, double> msgTime;
 	  string m_oldLane;
 
