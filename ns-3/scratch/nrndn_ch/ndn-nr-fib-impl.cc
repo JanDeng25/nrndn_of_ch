@@ -130,7 +130,7 @@ NrFibImpl::AddFibEntry (const Ptr<const Name> &prefix, std::string lane,uint32_t
 			{
 
 				fibEntry->AddIncomingNeighbors(lane,ttl);
-				std::cout<<lane<<" "<<ttl<<std::endl;
+				//std::cout<<lane<<" "<<ttl<<std::endl;
                 return;
 			}
 
