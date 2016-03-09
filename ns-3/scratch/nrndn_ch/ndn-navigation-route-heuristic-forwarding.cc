@@ -1017,6 +1017,7 @@ void NavigationRouteHeuristic::PrepareInterestPacket(Ptr<Interest> interest)
 	std::string hop;
 	const std::unordered_map<std::string,uint32_t>& interestNodes = nexthop->getIncomingnbs();
 	hop = interestNodes.begin()->first	;
+	std::cout<<hop<<std::endl;
 	nrheader.setCurrentLane(hop);
 	nrPayload->AddHeader(nrheader);
 
