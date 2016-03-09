@@ -1012,7 +1012,8 @@ void NavigationRouteHeuristic::PrepareInterestPacket(Ptr<Interest> interest)
 	nrPayload->RemoveHeader(nrheader);
 
 	Ptr<ndn::fib::nrndn::EntryNrImpl> nexthop;
-	Ptr<fib::Entry> entry_fib = m_fib->Find(interest->GetName());
+	const Name& nam = interest->GetName();
+	Ptr<fib::Entry> entry_fib = m_fib->Find(nam);
 	nexthop = DynamicCast<ndn::fib::nrndn::EntryNrImpl>(entry_fib);
 	std::string hop;
 	hop = (nexthop->getIncomingnbs()).begin()->first	;
