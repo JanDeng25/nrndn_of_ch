@@ -119,9 +119,10 @@ bool NrPitImpl::UpdatePit(std::string lane,Ptr<Interest> interest)
 {
 	if(m_pitContainer.empty()){
 		Ptr<fib::Entry> fibEntry=ns3::Create<fib::Entry>(Ptr<Fib>(0),Ptr<Name>(0));
-		Ptr<EntryNrImpl> fentry = ns3::Create<EntryNrImpl>(*this,interest,fibEntry);
-		Ptr<Entry> pitEntry = DynamicCast<Entry>(fentry);
-		m_pitContainer.push_back(pitEntry);
+		Ptr<EntryNrImpl> pitfentry = ns3::Create<EntryNrImpl>(*this,interest,fibEntry);
+		pitfentry->AddIncomingNeighbors(lane);
+	    Ptr<Entry> Entry = DynamicCast<Entry>(pitfentry);
+		m_pitContainer.push_back(Entry);
 		}
 	else{
 	//std::ostringstream os;
@@ -154,9 +155,10 @@ bool NrPitImpl::UpdatePit(std::string lane,Ptr<Interest> interest)
 		}
 	}
 	    Ptr<fib::Entry> fibEntry=ns3::Create<fib::Entry>(Ptr<Fib>(0),Ptr<Name>(0));
-	    Ptr<EntryNrImpl> fentry = ns3::Create<EntryNrImpl>(*this,interest,fibEntry);
-		Ptr<Entry> pitEntry = DynamicCast<Entry>(fentry);
-		m_pitContainer.push_back(pitEntry);
+	    Ptr<EntryNrImpl> pitfentry = ns3::Create<EntryNrImpl>(*this,interest,fibEntry);
+	    pitfentry->AddIncomingNeighbors(lane);
+		Ptr<Entry> Entry = DynamicCast<Entry>(pitfentry);
+		m_pitContainer.push_back(Entry);
 
 	}
 

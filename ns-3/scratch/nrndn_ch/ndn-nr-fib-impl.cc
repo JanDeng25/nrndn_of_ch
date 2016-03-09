@@ -115,9 +115,10 @@ void
 NrFibImpl::AddFibEntry (const Ptr<const Name> &prefix, std::string lane,uint32_t ttl)
 {
 	if(m_fibContainer.empty()){
-		Ptr<EntryNrImpl> entry = ns3::Create<EntryNrImpl>(this,prefix,m_cleanInterval);
-		Ptr<Entry> fibEntry = DynamicCast<Entry>(entry);
-		m_fibContainer.push_back(fibEntry);
+		Ptr<EntryNrImpl> fibentry = ns3::Create<EntryNrImpl>(this,prefix,m_cleanInterval);
+		fibentry->AddIncomingNeighbors(lane,ttl);
+		Ptr<Entry> Entry = DynamicCast<Entry>(fibentry);
+		m_fibContainer.push_back(Entry);
 	}
 	else{
 	std::vector<Ptr<Entry> >::iterator fib=m_fibContainer.begin();
@@ -139,9 +140,10 @@ NrFibImpl::AddFibEntry (const Ptr<const Name> &prefix, std::string lane,uint32_t
 	//if not,insert it to the container;
 
 	//error:no matching function for call to
-	Ptr<EntryNrImpl> entry = ns3::Create<EntryNrImpl>(this,prefix,m_cleanInterval);
-	Ptr<Entry> fibEntry = DynamicCast<Entry>(entry);
-	m_fibContainer.push_back(fibEntry);
+	Ptr<EntryNrImpl> fibentry = ns3::Create<EntryNrImpl>(this,prefix,m_cleanInterval);
+	fibentry->AddIncomingNeighbors(lane,ttl);
+	Ptr<Entry> Entry = DynamicCast<Entry>(fibentry);
+	m_fibContainer.push_back(Entry);
 	}
     return;
 }
