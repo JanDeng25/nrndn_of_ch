@@ -1012,12 +1012,12 @@ void NavigationRouteHeuristic::PrepareInterestPacket(Ptr<Interest> interest)
 	nrPayload->RemoveHeader(nrheader);
 
 	Ptr<ndn::fib::nrndn::EntryNrImpl> nexthop;
-	const Name& nam = interest->GetName();
-	Ptr<fib::Entry> entry_fib = m_fib->Find(nam);
+	Ptr<fib::Entry> entry_fib = m_fib->Find(interest->GetName());
 	nexthop = DynamicCast<ndn::fib::nrndn::EntryNrImpl>(entry_fib);
-	//std::string hop;
-	//hop = (nexthop->getIncomingnbs()).begin()->first	;
-	nrheader.setCurrentLane((nexthop->getIncomingnbs()).begin()->first);
+	std::string hop;
+	const std::unordered_map<std::string,uint32_t>& interestNodes = nexthop->getIncomingnbs();
+	hop = interestNodes.begin()->first	;
+	nrheader.setCurrentLane(hop);
 	nrPayload->AddHeader(nrheader);
 
 	FwHopCountTag hopCountTag;
