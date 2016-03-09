@@ -1014,7 +1014,7 @@ void NavigationRouteHeuristic::PrepareInterestPacket(Ptr<Interest> interest)
 	Ptr<ndn::fib::nrndn::EntryNrImpl> nexthop;
 	Ptr<fib::Entry> entry_fib = m_fib->Find(interest->GetName());
 	nexthop = DynamicCast<ndn::fib::nrndn::EntryNrImpl>(entry_fib);
-
+    std::cout<<nexthop->getIncomingnbs().size()<<std::endl;
 	const std::unordered_map<std::string,uint32_t>& interestNodes = nexthop->getIncomingnbs();
 	std::unordered_map<std::string,uint32_t>::const_iterator it=interestNodes.begin();
 	std::cout<<it->first<<std::endl;
