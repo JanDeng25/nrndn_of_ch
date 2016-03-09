@@ -56,7 +56,7 @@ EntryNrImpl::AddIncomingNeighbors(std::string lane,uint32_t ttl)
 				//m_incomingnbs.insert (lane);
 		//return ret.first;
 		incomingnb = m_incomingnbs.begin();
-		while(incomingnb->second < ttl)
+		while(incomingnb!=m_incomingnbs.end()&&incomingnb->second < ttl)
 		{
 			incomingnb++;
 		}
