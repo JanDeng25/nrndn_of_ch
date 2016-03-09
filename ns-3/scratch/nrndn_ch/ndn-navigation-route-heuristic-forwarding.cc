@@ -1015,7 +1015,7 @@ void NavigationRouteHeuristic::PrepareInterestPacket(Ptr<Interest> interest)
 	const Name& nam = interest->GetName();
 	Ptr<fib::Entry> entry_fib = m_fib->Find(nam);
 	nexthop = DynamicCast<ndn::fib::nrndn::EntryNrImpl>(entry_fib);
-	std::string hop;
+	const std::string hop;
 	hop = (nexthop->getIncomingnbs()).begin()->first	;
 	nrheader.setCurrentLane(hop);
 	nrPayload->AddHeader(nrheader);
