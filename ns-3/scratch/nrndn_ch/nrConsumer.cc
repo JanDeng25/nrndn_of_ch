@@ -168,10 +168,13 @@ void nrConsumer::OnData(Ptr<const Data> data)
 
 void nrConsumer::laneChange(std::string oldLane, std::string newLane)
 {
+	if(!m_active)
+			return;
 	if(interestSent.empty())
 		return;
 	if(oldLane == m_oldLane)
 		return;
+
 
 	m_oldLane = oldLane;
 
