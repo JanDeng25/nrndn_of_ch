@@ -44,7 +44,7 @@ EntryNrImpl::AddIncomingNeighbors(std::string lane,uint32_t ttl)
 	if(m_incomingnbs.empty()){
 		m_incomingnbs.insert(std::pair<std::string,uint32_t>(lane,ttl));
 		std::cout<<lane<<" "<<ttl<<std::endl;
-		std::cout<<m_incomingnbs.begin()->first<<" "<<m_incomingnbs.begin()->second<<endl;
+		std::cout<<m_incomingnbs.begin()->first<<" "<<m_incomingnbs.begin()->second<<std::endl;
 		return m_incomingnbs.begin();
 	}
 	//AddNeighborTimeoutEvent(id);
