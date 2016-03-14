@@ -63,6 +63,8 @@ public:
 
 	bool IsActive();
 
+	bool isJuction(string lane);
+
 	/////发送资源包
 	void sendResourcePacket();
 

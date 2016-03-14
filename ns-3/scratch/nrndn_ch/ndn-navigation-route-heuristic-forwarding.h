@@ -25,6 +25,7 @@
 
 #include <vector>
 #include <map>
+#include <set>
 #include <unordered_set>
 
 namespace ns3
@@ -117,6 +118,10 @@ private:
 
 	void laneChange(std::string, std::string);
 
+	bool isJuction(std::string lane);
+
+	bool isSameLane(std::string lane1, std::string lane2);
+
 
 	void ExpireInterestPacketTimer(uint32_t nodeId,uint32_t seq);
 
@@ -166,6 +171,8 @@ private:
 	void SendDataPacket(Ptr<Data> data);
 
 	void SendHello ();
+
+
 
 
 private:
@@ -229,7 +236,9 @@ private:
 
 	Time m_freshness;
 
-	 std::string m_oldLane;
+	 string m_oldLane;
+
+	 set<uint32_t> resourceReceived;
 };
 } /* namespace nrndn */
 } /* namespace fw */

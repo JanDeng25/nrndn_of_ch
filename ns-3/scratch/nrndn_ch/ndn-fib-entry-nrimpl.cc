@@ -41,10 +41,11 @@ EntryNrImpl::~EntryNrImpl ()
 std::unordered_map<std::string,uint32_t  >::iterator
 EntryNrImpl::AddIncomingNeighbors(std::string lane,uint32_t ttl)
 {
-	if(m_incomingnbs.empty()){
-		m_incomingnbs.insert(std::pair<std::string,uint32_t>(lane,ttl));
-		std::cout<<lane<<" "<<ttl<<std::endl;
-		std::cout<<m_incomingnbs.begin()->first<<" "<<m_incomingnbs.begin()->second<<std::endl;
+	std::cout<<"add FIB incomingNeighbors  name:  "<<m_data_name<<"  lane: "<<lane<<"  TTL: "<<ttl<<std::endl;
+	if(m_incomingnbs.empty())
+	{
+		m_incomingnbs.insert(m_incomingnbs.begin(),std::pair<std::string,uint32_t>(lane,ttl));
+		//this->Print(std::cout);
 		return m_incomingnbs.begin();
 	}
 	//AddNeighborTimeoutEvent(id);
@@ -56,25 +57,32 @@ EntryNrImpl::AddIncomingNeighbors(std::string lane,uint32_t ttl)
 				//m_incomingnbs.insert (lane);
 		//return ret.first;
 		incomingnb = m_incomingnbs.begin();
-		while(incomingnb!=m_incomingnbs.end()&&incomingnb->second < ttl)
+		while(incomingnb != m_incomingnbs.end() && incomingnb->second < ttl)
 		{
 			incomingnb++;
 		}
 		m_incomingnbs.insert(incomingnb,std::pair<std::string,uint32_t>(lane,ttl));
+		//this->Print(std::cout);
 		return incomingnb;
 	}
 	else
 	{
+		//this->Print(std::cout);
 		return incomingnb;
 	}
 }
 
 void EntryNrImpl::Print(std::ostream& os) const
 {
-	os<<"nrndnEntryNrImpl content: "
-			<<" data name="<<m_data_name;
+	os<<"FIB Entry content: "
+			<<" data name="<<m_data_name<<"   ";
+	if(m_incomingnbs.empty())
+	{
+		os<<",  empty"<<std::endl;
+		return;
+	}
 	for(std::unordered_map< std::string,uint32_t >::const_iterator it = m_incomingnbs.begin(); it != m_incomingnbs.end(); ++it)
-		os<<(*it).first<<" "<<(*it).second;
+		os<<(*it).first<<"   "<<(*it).second<<"    ";
 	os<<std::endl;
 }
 void EntryNrImpl::setDataName(std::string name)

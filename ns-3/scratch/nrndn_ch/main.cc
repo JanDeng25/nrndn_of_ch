@@ -47,9 +47,9 @@ public:
   /// Run simulation of nrndn
   void RunNrndnSim ();
   /// Run simulation of distance based forwarding
- /// void RunDistSim ();
+  void RunTraNdnSim ();
   /// Run simulation of CDS based forwarding
- /// void RunCDSSim ();
+  void RunDjNdnSim ();
   /// Report results
   void Report ();
 
@@ -141,15 +141,12 @@ private:
   void InstallInternetStack ();
   void InstallSensor();
   void InstallNrNdnStack();
- // void InstallDistNdnStack();
-  //void InstallCDSNdnStack();
+  void InstallTraNdnStack();
+  void InstallDjNdnStack();
   void InstallMobility();
- // void InstallTestMobility();
   void InstallNrndnApplications ();
-  //void InstallDistApplications();
-  //void InstallCDSApplications();
-  //void InstallTestApplications();
-
+  void InstallTraNdnApplications();
+  void InstallDjNdnApplications();
   void InstallTraffics();
 
   // Utility funcitons
@@ -176,8 +173,8 @@ int main (int argc, char **argv)
 //-----------------------------------------------------------------------------
 //构造函数
 nrndnExample::nrndnExample () :
-  size (3),//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-  totalTime (36000),//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  size (3),
+  totalTime (36000),
   readTotalTime(0),
   alltoallTime(-1),
   pcap (false),
@@ -261,12 +258,12 @@ void nrndnExample::Run()
 	case 0:
 		RunNrndnSim();
 		break;
-	//case 1:
-		//RunDistSim();
-		//break;
-	//case 2:
-		//RunCDSSim();
-		//break;
+	case 1:
+		RunTraNdnSim();
+		break;
+	case 2:
+		RunDjNdnSim();
+		break;
 	default:
 		cout<<"Undefine method"<<endl;
 		break;
@@ -295,10 +292,6 @@ nrndnExample::RunNrndnSim ()
 	//InstallTestMobility();
 	std::cout<<"安装Nrndn应用程序"<<std::endl;
 	InstallNrndnApplications();
-	//InstallTestApplications();
-	//std::cout<<"安装交通状况"<<std::endl;
-	//InstallTraffics();
-
 
 	Simulator::Schedule(Seconds(0.0), &nrndnExample::Look_at_clock, this);
 
@@ -311,10 +304,9 @@ nrndnExample::RunNrndnSim ()
 	Simulator::Destroy();
 }
 
-/*
-void nrndnExample::RunDistSim()
+void nrndnExample::RunTraNdnSim()
 {
-	name = "Dist-Simulation";
+	name = "TRA-NDN-Simulation";
 	std::cout<<"读取交通数据"<<std::endl;
 	LoadTraffic();
 	std::cout<<"创造节点"<<std::endl;
@@ -326,11 +318,9 @@ void nrndnExample::RunDistSim()
 	std::cout<<"安装传感器"<<std::endl;
 	InstallSensor();
 	std::cout<<"初始化DistNdnStack"<<std::endl;
-	InstallDistNdnStack();
+	InstallTraNdnStack();
 	std::cout<<"安装Dist应用程序"<<std::endl;
-	InstallDistApplications();
-	std::cout<<"安装交通状况"<<std::endl;
-	InstallTraffics();
+	InstallTraNdnApplications();
 
 	Simulator::Schedule(Seconds(0.0), &nrndnExample::Look_at_clock, this);
 
@@ -338,11 +328,10 @@ void nrndnExample::RunDistSim()
 
 	Simulator::Stop(Seconds(totalTime));
 	Simulator::Run();
-
 	Simulator::Destroy();
 }
 
-void nrndnExample::RunCDSSim()
+void nrndnExample::RunDjNdnSim()
 {
 	name = "CDS-Simulation";
 	LoadTraffic();
@@ -350,9 +339,8 @@ void nrndnExample::RunCDSSim()
 	CreateDevices();
 	InstallMobility();
 	InstallSensor();
-	InstallCDSNdnStack();
-	InstallCDSApplications();
-	InstallTraffics();
+	InstallDjNdnStack();
+	InstallDjNdnApplications();
 
 	Simulator::Schedule(Seconds(0.0), &nrndnExample::Look_at_clock, this);
 
@@ -360,10 +348,9 @@ void nrndnExample::RunCDSSim()
 
 	Simulator::Stop(Seconds(totalTime));
 	Simulator::Run();
-
 	Simulator::Destroy();
 }
-*/
+
 void
 nrndnExample::Report ()
 {
@@ -374,13 +361,13 @@ nrndnExample::Report ()
 	//2. output the result
 	os//<<arrivalRate <<'\t'
 			//<<accuracyRate<<'\t'
-			<<hitRate<<'\t'
-			<<averageDelay<<'\t'
-			<<ForwardTimes<<'\t'
-			<<averageInterestForwardTimes<<'\t'
-			<<averageDataForwardTimes<<'\t'
-			<<interestNum<<'\t'
-			<<detectTimes<<'\t'
+			<<"hit rate:"<<hitRate<<'\t'
+			<<" average delay:"<<averageDelay<<'\t'
+			<<" forward times:"<<ForwardTimes<<'\t'
+			<<" average interest forwards times:"<<averageInterestForwardTimes<<'\t'
+			<<" average data froward times:"<<averageDataForwardTimes<<'\t'
+			<<" interest num:"<<interestNum<<'\t'
+			<<" detect num:"<<detectTimes<<'\t'
 			//<<SumForwardTimes<<'\t'
 			//<<nrUtils::InterestByteSent<<'\t'
 			//<<nrUtils::HelloByteSent<<'\t'
@@ -521,27 +508,58 @@ nrndnExample::InstallNrNdnStack()
 	ndnHelper.SetDefaultRoutes (true);
 	ndnHelper.Install (nodes);
 }
-/*
-void nrndnExample::InstallDistNdnStack()
+
+void nrndnExample::InstallTraNdnStack()//////////////////////////////////////gai!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 {
-  NS_LOG_INFO("Installing Dist NDN stack");
+  NS_LOG_INFO("Installing Tra NDN stack");
   ndn::StackHelper ndnHelper;
-  ndnHelper.SetForwardingStrategy (
-      "ns3::ndn::fw::nrndn::DistanceBasedForwarding");
-  ndnHelper.SetDefaultRoutes (true);
-  ndnHelper.Install (nodes);
+  	// ndnHelper.AddNetDeviceFaceCreateCallback (WifiNetDevice::GetTypeId (), MakeCallback (MyNetDeviceFaceCallback));
+  	//ndnHelper.SetForwardingStrategy ("ns3::ndn::fw::BestRoute");
+  	string str("false");
+  	string noFwStopStr("false");
+  	if(HelloLogEnable)
+  		str="true";
+  	if(noFwStop)
+  		noFwStopStr="true";
+  	std::ostringstream TTLMaxStr;
+  	TTLMaxStr<<TTLMax;
+  	std::ostringstream pitCleanIntervalStr;
+  	uint32_t pitCleanInterval = 1.0 / interestFrequency * 3.0;
+  	pitCleanIntervalStr<<pitCleanInterval;
+  	cout<<"pitInterval="<<pitCleanIntervalStr.str()<<endl;
+  	ndnHelper.SetForwardingStrategy ("ns3::ndn::fw::nrndn::NavigationRouteHeuristic","HelloLogEnable",str,"NoFwStop",noFwStopStr);
+  	ndnHelper.SetPit("ns3::ndn::pit::nrndn::NrPitImpl");
+  	ndnHelper.SetFib("ns3::ndn::fib::nrndn::NrFibImpl");
+  	ndnHelper.SetContentStore("ns3::ndn::cs::nrndn::NrCsImpl");
+  	ndnHelper.SetDefaultRoutes (true);
+  	ndnHelper.Install (nodes);
 }
 
-void nrndnExample::InstallCDSNdnStack()
+void nrndnExample::InstallDjNdnStack()//////////////////////////////////////gai!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 {
-  NS_LOG_INFO("Installing CDS NDN stack");
-  ndn::StackHelper ndnHelper;
-  ndnHelper.SetForwardingStrategy (
-      "ns3::ndn::fw::nrndn::CDSBasedForwarding");
-  ndnHelper.SetDefaultRoutes (true);
-  ndnHelper.Install (nodes);
+	ndn::StackHelper ndnHelper;
+		// ndnHelper.AddNetDeviceFaceCreateCallback (WifiNetDevice::GetTypeId (), MakeCallback (MyNetDeviceFaceCallback));
+		//ndnHelper.SetForwardingStrategy ("ns3::ndn::fw::BestRoute");
+		string str("false");
+		string noFwStopStr("false");
+		if(HelloLogEnable)
+			str="true";
+		if(noFwStop)
+			noFwStopStr="true";
+		std::ostringstream TTLMaxStr;
+		TTLMaxStr<<TTLMax;
+		std::ostringstream pitCleanIntervalStr;
+		uint32_t pitCleanInterval = 1.0 / interestFrequency * 3.0;
+		pitCleanIntervalStr<<pitCleanInterval;
+		cout<<"pitInterval="<<pitCleanIntervalStr.str()<<endl;
+		ndnHelper.SetForwardingStrategy ("ns3::ndn::fw::nrndn::NavigationRouteHeuristic","HelloLogEnable",str,"NoFwStop",noFwStopStr);
+		ndnHelper.SetPit("ns3::ndn::pit::nrndn::NrPitImpl");
+		ndnHelper.SetFib("ns3::ndn::fib::nrndn::NrFibImpl");
+		ndnHelper.SetContentStore("ns3::ndn::cs::nrndn::NrCsImpl");
+		ndnHelper.SetDefaultRoutes (true);
+		ndnHelper.Install (nodes);
 }
-*/
+
 void
 nrndnExample::InstallInternetStack ()
 {
@@ -559,9 +577,9 @@ void
 nrndnExample::InstallMobility()
 {
 	//double maxTime = 0;
-	std::cout<<"正在安装mobility.."<<std::endl;
+	std::cout<<"正在安装mobility..."<<std::endl;
 	mobility->Install();
-	std::cout<<"正在读取总时间111："<<std::endl;
+	std::cout<<"正在读取总时间...："<<std::endl;
 	readTotalTime = mobility->GetReadTotalTime();
 	totalTime = readTotalTime < totalTime ? readTotalTime : totalTime;
 	std::cout<<"总时间："<<totalTime<<std::endl;
@@ -598,6 +616,58 @@ nrndnExample::InstallNrndnApplications ()
 	}
 }
 
+void nrndnExample::InstallTraNdnApplications()////////////////////////////////gai!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+{
+	/*
+	NS_LOG_INFO ("Installing TRA NDN Applications");
+	ndn::AppHelper consumerHelper ("ns3::ndn::nrndn::traConsumer");
+	consumerHelper.SetAttribute ("PayloadSize", UintegerValue (virtualPayloadSize));
+	consumerHelper.Install(nodes);
+	nrUtils::appIndex["ns3::ndn::nrndn::traConsumer"]=0;
+
+	ndn::AppHelper producerHelper ("ns3::ndn::nrndn::traProducer");
+	producerHelper.Install(nodes);
+	nrUtils::appIndex["ns3::ndn::nrndn::traProducer"]=1;
+
+	//Setup start and end time;
+	for (NodeContainer::Iterator i = nodes.Begin (); i != nodes.End (); ++i)
+	{
+		double start=mobility->GetStartTime((*i)->GetId());
+		double stop =mobility->GetStopTime ((*i)->GetId());
+		(*i)->GetApplication(nrUtils::appIndex["ns3::ndn::nrndn::traConsumer"])->SetAttribute("StartTime",TimeValue (Seconds (start)));
+		(*i)->GetApplication(nrUtils::appIndex["ns3::ndn::nrndn::traConsumer"])->SetAttribute("StopTime", TimeValue (Seconds (stop )));
+
+		(*i)->GetApplication(nrUtils::appIndex["ns3::ndn::nrndn::traProducer"])->SetAttribute("StartTime",TimeValue (Seconds (start)));
+		(*i)->GetApplication(nrUtils::appIndex["ns3::ndn::nrndn::traProducer"])->SetAttribute("StopTime", TimeValue (Seconds (stop )));
+	}*/
+}
+
+void nrndnExample::InstallDjNdnApplications()/////////////////////////////////////////////gai/11111111111111111111111111111111111
+{
+	/*
+	NS_LOG_INFO ("Installing DJ NDN Applications");
+	ndn::AppHelper consumerHelper ("ns3::ndn::nrndn::nrConsumer");
+	consumerHelper.SetAttribute ("PayloadSize", UintegerValue (virtualPayloadSize));
+	consumerHelper.Install(nodes);
+	nrUtils::appIndex["ns3::ndn::nrndn::nrConsumer"]=0;
+
+	ndn::AppHelper producerHelper ("ns3::ndn::nrndn::nrProducer");
+	producerHelper.Install(nodes);
+	nrUtils::appIndex["ns3::ndn::nrndn::nrProducer"]=1;
+
+	//Setup start and end time;
+	for (NodeContainer::Iterator i = nodes.Begin (); i != nodes.End (); ++i)
+	{
+		double start=mobility->GetStartTime((*i)->GetId());
+		double stop =mobility->GetStopTime ((*i)->GetId());
+		(*i)->GetApplication(nrUtils::appIndex["ns3::ndn::nrndn::nrConsumer"])->SetAttribute("StartTime",TimeValue (Seconds (start)));
+		(*i)->GetApplication(nrUtils::appIndex["ns3::ndn::nrndn::nrConsumer"])->SetAttribute("StopTime", TimeValue (Seconds (stop )));
+
+		(*i)->GetApplication(nrUtils::appIndex["ns3::ndn::nrndn::nrProducer"])->SetAttribute("StartTime",TimeValue (Seconds (start)));
+		(*i)->GetApplication(nrUtils::appIndex["ns3::ndn::nrndn::nrProducer"])->SetAttribute("StopTime", TimeValue (Seconds (stop )));
+	}*/
+}
+
 void nrndnExample::Look_at_clock()
 {
 
@@ -632,36 +702,6 @@ void nrndnExample::SetPos(Ptr<MobilityModel> mob)
 	mob->SetPosition(pos);
 	Simulator::Schedule (Seconds (1.0), &nrndnExample::SetPos, this, mob);
 }
-/*
-void
-nrndnExample::InstallTestMobility()
-{
-//	Ptr<UniformRandomVariable> randomizer = CreateObject<UniformRandomVariable> ();
-//	randomizer->SetAttribute ("Min", DoubleValue (10));
-//	randomizer->SetAttribute ("Max", DoubleValue (100));
-
-	MobilityHelper mobility;
-	mobility.SetPositionAllocator ("ns3::RandomBoxPositionAllocator",
-	                               "X", PointerValue (randomizer),
-	                               "Y", PointerValue (randomizer),
-	                               "Z", PointerValue (randomizer));
-
-	mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
-
-	mobility.Install (nodes);
-
-	  MobilityHelper mobility;
-	  mobility.SetPositionAllocator ("ns3::GridPositionAllocator",
-	                                 "MinX", DoubleValue (0.0),
-	                                 "MinY", DoubleValue (0.0),
-	                                 "DeltaX", DoubleValue (transRange),
-	                                 "DeltaY", DoubleValue (0),
-	                                 "GridWidth", UintegerValue (size),
-	                                 "LayoutType", StringValue ("RowFirst"));
-	  mobility.SetMobilityModel ("ns3::ConstantPositionMobilityModel");
-	  mobility.Install (nodes);
-}
-*/
 
 void nrndnExample::InstallSensor()
 {
@@ -671,110 +711,12 @@ void nrndnExample::InstallSensor()
 			"sumodata",PointerValue(mobility));
 	sensorHelper.InstallAll();
 }
-/*
-void nrndnExample::InstallTestApplications()
-{
-	//This test use 3 nodes, Consumer A and B send different interest to Producer C.
-	//At time 5s, Data producer C change its data from A's interest to B's interest.
-	//So before 5s, C response to A, and after 5s. C response to B
-	ndn::AppHelper consumerHelper ("ns3::ndn::ConsumerCbr");
-	//Ndn application for sending out Interest packets at a "constant" rate (Poisson process)
-	consumerHelper.SetPrefix ("/prefix0");
-	consumerHelper.SetAttribute ("Frequency", DoubleValue (1.0));
-
-	//If you send the same interest packet for several times, the data producer will
-	//response your interest packet respectively. It may be a waste. So we can set Consumer::MaxSeq
-	//To limit the times interest packet send. For example,just 1.0
-	consumerHelper.SetAttribute ("MaxSeq""Maximum sequence number to request",IntegerValue(10));
-	consumerHelper.Install (nodes.Get(0));
-	consumerHelper.SetPrefix ("/prefix1");
-	consumerHelper.Install (nodes.Get(1));
-
-	ndn::AppHelper producerHelper ("ns3::ndn::nrndn::nrProducer");
-	producerHelper.SetPrefix ("/prefix0");
-	producerHelper.SetAttribute ("PayloadSize", StringValue("1200"));
-	producerHelper.Install (nodes.Get (2));
-
-}
-*/
 
 void nrndnExample::InstallTraffics()
 {
-	/*
-	SeedManager::SetSeed(1234);
-	UniformVariable rnd(0,nodes.GetN());
-	std::cout<<"插入事件："<<accidentNum<<endl;
-	for(uint32_t i=0;i<accidentNum;++i)
-	{
-		uint32_t index=rnd.GetValue();
-		Ptr<ns3::ndn::nrndn::nrProducer> producer= DynamicCast<ns3::ndn::nrndn::nrProducer>(
-				nodes.Get(index)->GetApplication(nrUtils::appIndex["ns3::ndn::nrndn::nrProducer"]));
-		NS_ASSERT(producer);
-		producer->addAccident();
 
-	}
-	std::cout<<"插入事件：完毕"<<endl;
-*/
-	/*
-	uint32_t InsertIndex=10;//for debug only
-	Ptr<ns3::ndn::nrndn::nrProducer> p= DynamicCast<ns3::ndn::nrndn::nrProducer>(
-					nodes.Get(InsertIndex)->GetApplication(nrUtils::appIndex["ns3::ndn::nrndn::nrProducer"]));
-	p->ScheduleAccident(10);
-	p->ScheduleAccident(13);
-	p->ScheduleAccident(15);
-	*/
-}
-/*
-void nrndnExample::InstallDistApplications()
-{
-	NS_LOG_INFO ("Installing Dist Applications");
-	ndn::AppHelper consumerHelper ("ns3::ndn::nrndn::tradConsumer");
-	consumerHelper.SetAttribute ("PayloadSize", UintegerValue (virtualPayloadSize));
-	consumerHelper.Install(nodes);
-	nrUtils::appIndex["ns3::ndn::nrndn::tradConsumer"]=0;
-
-	ndn::AppHelper producerHelper ("ns3::ndn::nrndn::nrProducer");
-	producerHelper.Install(nodes);
-	nrUtils::appIndex["ns3::ndn::nrndn::nrProducer"]=1;
-
-	//Setup start and end time;
-	for (NodeContainer::Iterator i = nodes.Begin (); i != nodes.End (); ++i)
-	{
-		double start=mobility->GetStartTime((*i)->GetId());
-		double stop =mobility->GetStopTime ((*i)->GetId());
-		(*i)->GetApplication(nrUtils::appIndex["ns3::ndn::nrndn::tradConsumer"])->SetAttribute("StartTime",TimeValue (Seconds (start)));
-		(*i)->GetApplication(nrUtils::appIndex["ns3::ndn::nrndn::tradConsumer"])->SetAttribute("StopTime", TimeValue (Seconds (stop )));
-
-		(*i)->GetApplication(nrUtils::appIndex["ns3::ndn::nrndn::nrProducer"])->SetAttribute("StartTime",TimeValue (Seconds (start)));
-		(*i)->GetApplication(nrUtils::appIndex["ns3::ndn::nrndn::nrProducer"])->SetAttribute("StopTime", TimeValue (Seconds (stop )));
-	}
 }
 
-void nrndnExample::InstallCDSApplications()
-{
-	NS_LOG_INFO ("Installing CDS Applications");
-	ndn::AppHelper consumerHelper ("ns3::ndn::nrndn::tradConsumer");
-	consumerHelper.SetAttribute ("PayloadSize", UintegerValue (virtualPayloadSize));
-	consumerHelper.Install(nodes);
-	nrUtils::appIndex["ns3::ndn::nrndn::tradConsumer"]=0;
-
-	ndn::AppHelper producerHelper ("ns3::ndn::nrndn::nrProducer");
-	producerHelper.Install(nodes);
-	nrUtils::appIndex["ns3::ndn::nrndn::nrProducer"]=1;
-
-	//Setup start and end time;
-	for (NodeContainer::Iterator i = nodes.Begin (); i != nodes.End (); ++i)
-	{
-		double start=mobility->GetStartTime((*i)->GetId());
-		double stop =mobility->GetStopTime ((*i)->GetId());
-		(*i)->GetApplication(nrUtils::appIndex["ns3::ndn::nrndn::tradConsumer"])->SetAttribute("StartTime",TimeValue (Seconds (start)));
-		(*i)->GetApplication(nrUtils::appIndex["ns3::ndn::nrndn::tradConsumer"])->SetAttribute("StopTime", TimeValue (Seconds (stop )));
-
-		(*i)->GetApplication(nrUtils::appIndex["ns3::ndn::nrndn::nrProducer"])->SetAttribute("StartTime",TimeValue (Seconds (start)));
-		(*i)->GetApplication(nrUtils::appIndex["ns3::ndn::nrndn::nrProducer"])->SetAttribute("StopTime", TimeValue (Seconds (stop )));
-	}
-}
-*/
 
 
 void

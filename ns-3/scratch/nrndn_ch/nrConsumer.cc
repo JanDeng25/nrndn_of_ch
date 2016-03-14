@@ -44,10 +44,10 @@ TypeId nrConsumer::GetTypeId()
    			                           StringValue ("/"),
 	    			                    MakeNameAccessor (&nrConsumer::m_prefix),
 	    			                    MakeNameChecker ())
-//		    .AddAttribute("sensor", "The vehicle sensor used by the nrConsumer.",
-//		    	   	    		PointerValue (),
-//		    	   	    		MakePointerAccessor (&nrConsumer::m_sensor),
-//		    	   	    		MakePointerChecker<ns3::ndn::nrndn::NodeSensor> ())
+		    .AddAttribute("sensor", "The vehicle sensor used by the nrConsumer.",
+	    	   	    		PointerValue (),
+		    	   	    	MakePointerAccessor (&nrConsumer::m_sensor),
+	    	   	    		MakePointerChecker<ns3::ndn::nrndn::NodeSensor> ())
 		    .AddAttribute ("PayloadSize", "Virtual payload size for traffic Content packets",
 		    		            UintegerValue (1024),
 		    	                MakeUintegerAccessor (&nrConsumer::m_virtualPayloadSize),
@@ -98,24 +98,30 @@ void nrConsumer::ScheduleNextPacket()
 	if(GetNode()->GetId() > 30)
 		return;
 
-	double delay =( GetNode()->GetId() - 9 ) * 5 + 20;
+	double delay =( GetNode()->GetId()  - 9 ) * 2 + 60;
 
 	Simulator::Schedule (Seconds (delay), & nrConsumer::SendPacket, this);
 }
 
 void nrConsumer::SendPacket()
 {
+
 	  if (!m_active) return;
+	  if(isJuction(m_sensor->getLane()))
+	  {
+		  Simulator::Schedule (Seconds (5.0), & nrConsumer::SendPacket, this);
+		  return;
+	  }
 
 	  uint32_t num = GetNode()->GetId() % 3 + 1;
-	  Name m_prefix;
-	  m_prefix.appendNumber(num);
+	  Name prefix("/");
+	  prefix.appendNumber(num);
 
 	  Ptr<Interest> interest = Create<Interest> (Create<Packet>(m_virtualPayloadSize));
-	  Ptr<Name> interestName = Create<Name> (m_prefix);
+	  Ptr<Name> interestName = Create<Name> (prefix);
 	  interest->SetName(interestName);
 	  interest->SetNonce(m_rand.GetValue());//just generate a random number
-	  interest->SetInterestLifetime    (m_interestLifeTime);
+	  //interest->SetInterestLifetime    (m_interestLifeTime);
 
 	   //add header;
 	  ndn::nrndn::nrndnHeader nrheader;
@@ -130,20 +136,22 @@ void nrConsumer::SendPacket()
 	  newPayload->AddHeader(nrheader);
 	  interest->SetPayload(newPayload);
 
-	  cout<<"node: "<<GetNode()->GetId()<<"  send interest packet,name: "<<m_prefix.toUri()<<" in consumer"<<endl;
+	  cout<<"node: "<<GetNode()->GetId()<<"  send interest packet,name: "<<prefix.toUri()<<" in consumer"<<endl;
 
 	  m_transmittedInterests (interest, this, m_face);
 	  m_face->ReceiveInterest (interest);
 
-	  interestSent[interest->GetNonce()] = m_prefix.toUri() ;
+	  interestSent[interest->GetNonce()] = prefix.toUri() ;
 	  msgTime[interest->GetNonce()] = Simulator::Now().GetSeconds();
 
 	  nrUtils::IncreaseNodeCounter();
 	  nrUtils::IncreaseInterestSum();
+
 }
 
 void nrConsumer::OnData(Ptr<const Data> data)
 {
+	 if (!m_active) return;
 	NS_LOG_FUNCTION (this);
 	Ptr<Packet> nrPayload	= data->GetPayload()->Copy();
 	const Name& name = data->GetName();
@@ -155,37 +163,35 @@ void nrConsumer::OnData(Ptr<const Data> data)
 
 	NS_ASSERT_MSG(packetPayloadSize == m_virtualPayloadSize,"packetPayloadSize is not equal to "<<m_virtualPayloadSize);
 
-	map<uint32_t, std::string>::iterator it = interestSent.find(signature);
+	map<uint32_t, string>::iterator it = interestSent.find(signature);
 	if(it != interestSent.end())
 	{
 		nrUtils::IncreaseInterestedNodeCounter();
 		double delay = Simulator::Now().GetSeconds() - msgTime[signature];
 		nrUtils::updateDelay(delay);
-		std::cout<<"At time "<<Simulator::Now().GetSeconds()<<":"<<m_node->GetId()<<"\treceived data "<<name.toUri()<<" from "<<nodeId<<"\tSignature "<<signature<<endl;
+		std::cout<<m_node->GetId()<<"\treceived data "<<name.toUri()<<" from "<<nodeId<<"\tSignature "<<signature<<endl;
 		interestSent.erase(it);
 	}
+
 }
 
 void nrConsumer::laneChange(std::string oldLane, std::string newLane)
 {
-	if(!m_active)
-			return;
-	if(interestSent.empty())
-		return;
-	if(oldLane == m_oldLane)
-		return;
-
+	 if (!m_active) return;
+	if(interestSent.empty()) return;
+	if(isJuction(newLane) ) return;
+	if(oldLane == m_oldLane) return;
 
 	m_oldLane = oldLane;
 
 	  cout<<m_node->GetId()<<" lane changed from "<<oldLane<<" to "<<newLane<<endl;
 
 	  uint32_t num = GetNode()->GetId() % 3 + 1;
-	  Name m_prefix;
-	  m_prefix.appendNumber(num);
+	  Name prefix("/");
+	  prefix.appendNumber(num);
 
 	  Ptr<Interest> interest = Create<Interest> (Create<Packet>(m_virtualPayloadSize));
-	  Ptr<Name> interestName = Create<Name> (m_prefix);
+	  Ptr<Name> interestName = Create<Name> (prefix);
 	  interest->SetName(interestName);
 	  interest->SetNonce(m_rand.GetValue());//just generate a random number
 	  interest->SetInterestLifetime    (m_interestLifeTime);
@@ -204,10 +210,18 @@ void nrConsumer::laneChange(std::string oldLane, std::string newLane)
 	  newPayload->AddHeader(nrheader);
 	  interest->SetPayload(newPayload);
 
-	  cout<<"node: "<<GetNode()->GetId()<<"  send MOVE_TO_NEW_LANE packet,name: "<<m_prefix.toUri()<<" in consumer"<<endl;
+	  cout<<"node: "<<GetNode()->GetId()<<"  send MOVE_TO_NEW_LANE packet,name: "<<prefix.toUri()<<" in consumer"<<endl;
 
 	  m_transmittedInterests (interest, this, m_face);
 	  m_face->ReceiveInterest (interest);
+}
+
+bool nrConsumer::isJuction(std::string lane)
+{
+	for(uint32_t i = 0; i<lane.length(); ++i)
+		if(lane[i] == 't')
+			return false;
+	return true;
 }
 
 void nrConsumer::NotifyNewAggregate()

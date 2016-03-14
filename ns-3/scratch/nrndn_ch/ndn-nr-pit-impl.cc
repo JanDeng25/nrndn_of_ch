@@ -18,6 +18,7 @@ NS_LOG_COMPONENT_DEFINE ("ndn.pit.NrPitImpl");
 #include "ns3/uinteger.h"
 #include "ns3/simulator.h"
 
+
 namespace ns3
 {
 namespace ndn
@@ -84,60 +85,24 @@ NrPitImpl::NotifyNewAggregate ()
 
   Pit::NotifyNewAggregate ();
 }
-/*
-bool NrPitImpl::UpdatePit(const std::vector<std::string>& route,const uint32_t& id)
-{
-	std::ostringstream os;
-	std::vector<Ptr<Entry> >::iterator pit=m_pitContainer.begin();
-	Ptr<Entry> entry = *pit;
-	Name::const_iterator head=entry->GetInterest()->GetName().begin();
-	//Can name::Component use "=="?
-	std::vector<std::string>::const_iterator it=
-			std::find(route.begin(),route.end(),head->toUri());
-	if(it==route.end())
-		return false;
-	for(;pit!=m_pitContainer.end()&&it!=route.end();++pit,++it)
-	{
-		const name::Component &pitName=(*pit)->GetInterest()->GetName().get(0);
-		if(pitName.toUri() == *it)
-		{
-			Ptr<EntryNrImpl> pitEntry = DynamicCast<EntryNrImpl>(*pit);
-			pitEntry->AddIncomingNeighbors(id);
-			os<<(*pit)->GetInterest()->GetName().toUri()<<" add Neighbor "<<id<<' ';
-		}
-		else
-			break;
-
-	}
-	//NS_LOG_UNCOND("update pit:"<<os.str());
-	NS_LOG_DEBUG("update pit:"<<os.str());
-	return true;
-}*/
 
 //add by DJ on Jan 4,2016:update pit
 bool NrPitImpl::UpdatePit(std::string lane,Ptr<Interest> interest)
 {
-	if(m_pitContainer.empty()){
+	if(m_pitContainer.empty())
+	{
 		Ptr<fib::Entry> fibEntry=ns3::Create<fib::Entry>(Ptr<Fib>(0),Ptr<Name>(0));
-		Ptr<EntryNrImpl> pitfentry = ns3::Create<EntryNrImpl>(*this,interest,fibEntry);
-		pitfentry->AddIncomingNeighbors(lane);
-	    Ptr<Entry> entry = DynamicCast<Entry>(pitfentry);
-		m_pitContainer.push_back(entry);
-		}
-	else{
+		Ptr<EntryNrImpl> fentry = ns3::Create<EntryNrImpl>(*this,interest,fibEntry);
+		fentry->AddIncomingNeighbors(lane);
+		Ptr<Entry> pitEntry = DynamicCast<Entry>(fentry);
+		m_pitContainer.push_back(pitEntry);
+		//this->Print(std::cout);
+		return true;;
+	}
+	else
+	{
 	//std::ostringstream os;
 	std::vector<Ptr<pit::Entry> >::iterator pit=m_pitContainer.begin();
-	//Ptr<Entry> entry = *pit;
-
-
-	//Can name::Component use "=="?
-	//std::vector<std::string>::const_iterator it=
-	//		std::find(route.begin(),route.end(),head->toUri());
-
-		//return false;
-		//pitEntry->AddIncomingNeighbors(id,interest);
-	//else
-		//pitEntry->RemoveIncomingNeighbors(interest->GetName());
 	for(;pit!=m_pitContainer.end();++pit)
 	{
 		Ptr<EntryNrImpl> pitEntry = DynamicCast<EntryNrImpl>(*pit);
@@ -148,22 +113,18 @@ bool NrPitImpl::UpdatePit(std::string lane,Ptr<Interest> interest)
 			if(it==pitEntry->getIncomingnbs().end())
 			{
 				pitEntry->AddIncomingNeighbors(lane);
-				pitEntry->Print(std::cout);
 			}
+			//this->Print(std::cout);
 			return true;
-			//os<<(*pit)->GetInterest()->GetName().toUri()<<" add Neighbor "<<id<<' ';
 		}
 	}
 	    Ptr<fib::Entry> fibEntry=ns3::Create<fib::Entry>(Ptr<Fib>(0),Ptr<Name>(0));
-	    Ptr<EntryNrImpl> pitfentry = ns3::Create<EntryNrImpl>(*this,interest,fibEntry);
-	    pitfentry->AddIncomingNeighbors(lane);
-		Ptr<Entry> entry = DynamicCast<Entry>(pitfentry);
-		m_pitContainer.push_back(entry);
-
+	    Ptr<EntryNrImpl> fentry = ns3::Create<EntryNrImpl>(*this,interest,fibEntry);
+	    fentry->AddIncomingNeighbors(lane);
+		Ptr<Entry> pitEntry = DynamicCast<Entry>(fentry);
+		m_pitContainer.push_back(pitEntry);
+		//this->Print(std::cout);
 	}
-
-	//NS_LOG_UNCOND("update pit:"<<os.str());
-	//NS_LOG_DEBUG("update pit:"<<os.str());
 	return true;
 }
 
@@ -179,9 +140,11 @@ bool NrPitImpl::RemovePitEntry(const Name& name)
 		{
 			//pitEntry->RemoveIncomingNeighbors(name.toUri());
 			m_pitContainer.erase(pit);
+			//this->Print(std::cout);
 			return true;
 		}
 	}
+	//this->Print(std::cout);
 	return false;
 }
 
@@ -275,7 +238,13 @@ NrPitImpl::MarkErased (Ptr<Entry> item)
 void
 NrPitImpl::Print (std::ostream& os) const
 {
-
+	os<<"PIT content ";
+	std::vector<Ptr<Entry> >::const_iterator it;
+	for(it=m_pitContainer.begin();it!=m_pitContainer.end();++it)
+	{
+		os<<"name:   "<<(*it)->GetPrefix().toUri()<<"    ";
+	}
+	os<<std::endl;
 }
 
 uint32_t

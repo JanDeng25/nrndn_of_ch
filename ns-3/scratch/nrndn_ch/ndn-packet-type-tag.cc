@@ -37,6 +37,7 @@ void
 PacketTypeTag::Deserialize (TagBuffer i)
 {
 	m_packetTpye = i.ReadU32 ();
+	//this->Print(std::cout);
 }
 
 void

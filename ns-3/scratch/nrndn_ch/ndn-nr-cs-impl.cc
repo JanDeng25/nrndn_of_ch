@@ -91,15 +91,16 @@ NrCsImpl::NotifyNewAggregate ()
 
 bool NrCsImpl::Add (Ptr<const Data> data)
 {
-	//std::cout<<"before find"<<std::endl;
-	if(Find(data->GetName())){
+	std::cout<<"add CS Entry  name:"<<data->GetName().toUri()<<std::endl;
+	if(Find(data->GetName()))
+	{
+		//this->Print(std::cout);
 		return true;
 	}
-	//std::cout<<"before create"<<std::endl;
     Ptr<cs::Entry> csEntry = ns3::Create<cs::Entry>(this,data) ;
-    //std::cout<<"after create"<<std::endl;
     m_csContainer.push_back(csEntry);
-    //NS_ASSERT_MSG (csEntry!=0,"Hello Simulator");
+
+    //this->Print(std::cout);
 	return true;
 }
 
@@ -171,7 +172,8 @@ NrCsImpl::InitializeNrFibEntry()
 }*/
   
 Ptr<Data>
-NrCsImpl::Lookup (Ptr<const Interest> interest){
+NrCsImpl::Lookup (Ptr<const Interest> interest)
+{
    return 0;
 }
 
@@ -186,7 +188,14 @@ NrCsImpl::MarkErased (Ptr<Entry> item)
 void
 NrCsImpl::Print (std::ostream& os) const
 {
-
+	os<<"CS Content Data Names:  ";
+	std::vector<Ptr<Entry> >::const_iterator it = m_csContainer.begin();
+	for( ; it!=m_csContainer.end(); ++it)
+	{
+		os<<(*it)->GetName().toUri()<<" ";
+	}
+	os<<std::endl;
+	return;
 }
 
 uint32_t

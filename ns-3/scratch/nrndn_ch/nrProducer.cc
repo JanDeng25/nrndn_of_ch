@@ -115,17 +115,31 @@ void nrProducer::OnInterest(Ptr<const Interest> interest)
 				" receive Interest Packet!!");
 }
 
+bool nrProducer::isJuction(string lane)
+{
+	for(uint32_t i = 0; i<lane.length(); ++i)
+		if(lane[i] == 't')
+			return false;
+	return true;
+}
+
 void nrProducer::sendResourcePacket()
 {
 	////m_sensor->getLane();
 	if (!m_active)  return;
-	Name m_prefix;
+	if(isJuction(m_sensor->getLane()))
+	{
+		 Simulator::Schedule (Seconds (5.0), &nrProducer::sendResourcePacket, this);
+		 return;
+	}
+
 	uint32_t num = GetNode()->GetId() % 3 + 1;
+	Name prefix("/");
 	//std::cout<<"siu:"<<GetNode()->GetId()<<"sendResourcePacket:"<<m_prefix.toUri()<<std::endl;
-	m_prefix.appendNumber(num);
-	std::cout<<"siu:"<<GetNode()->GetId()<<"sendResourcePacket:"<<m_prefix.toUri()<<std::endl;
+	prefix.appendNumber(num);
+	std::cout<<"siu:"<<GetNode()->GetId()<<"sendResourcePacket:"<<prefix.toUri()<<std::endl;
 	Ptr<Data> data = Create<Data>(Create<Packet>(m_virtualPayloadSize));
-	Ptr<Name> dataName = Create<Name>(m_prefix);
+	Ptr<Name> dataName = Create<Name>(prefix);
 	//dataName->append(m_postfix);
 
 	data->SetName(dataName);
@@ -142,7 +156,7 @@ void nrProducer::sendResourcePacket()
 	nrheader.setSourceId(GetNode()->GetId() );
 	nrheader.setX(m_sensor->getX());
 	nrheader.setY(m_sensor->getY());
-	std::string lane = m_sensor->getLane();
+	string lane = m_sensor->getLane();
 	nrheader.setCurrentLane(lane);
 	nrheader.setPreLane(lane);
 	Ptr<Packet> newPayload	= Create<Packet> ();
@@ -156,7 +170,7 @@ void nrProducer::sendResourcePacket()
 	FwHopCountTag hopCountTag;
 	data->GetPayload()->AddPacketTag(hopCountTag);
 
-	std::cout<<"siu:"<<"node("<< GetNode()->GetId() <<")\t sendResourcePacket:" << data->GetName ()<<",signature:"<<data->GetSignature()<<std::endl;
+	std::cout<<"siu:"<<"node("<< GetNode()->GetId() <<")\t send Resource Packet in producer:" << data->GetName ()<<",signature:"<<data->GetSignature()<<std::endl;
 
 	m_face->ReceiveData(data);
 	m_transmittedDatas(data, this, m_face);
