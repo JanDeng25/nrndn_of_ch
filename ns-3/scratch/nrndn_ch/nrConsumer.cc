@@ -133,7 +133,7 @@ void nrConsumer::SendPacket()
 	  nrheader.setPreLane(lane);
 	  nrheader.setCurrentLane(lane);
 
-	  Ptr<Packet> newPayload = Create<Packet> ();
+	  Ptr<Packet> newPayload = Create<Packet> (m_virtualPayloadSize);
 	  newPayload->AddHeader(nrheader);
 	  interest->SetPayload(newPayload);
 
@@ -155,13 +155,15 @@ void nrConsumer::OnData(Ptr<const Data> data)
 	NS_LOG_FUNCTION (this);
 	 //cout<<"consumer on data"<<endl;
 	Ptr<Packet> nrPayload	= data->GetPayload()->Copy();
-	uint32_t packetPayloadSize = nrPayload->GetSize();
-	NS_ASSERT_MSG(packetPayloadSize == m_virtualPayloadSize,"packetPayloadSize is not equal to "<<m_virtualPayloadSize);
+
 	const Name& name = data->GetName();
 	nrHeader nrheader;
 	nrPayload->RemoveHeader(nrheader);
 	uint32_t nodeId=nrheader.getSourceId();
 	uint32_t signature=data->GetSignature();
+
+	uint32_t packetPayloadSize = nrPayload->GetSize();
+	NS_ASSERT_MSG(packetPayloadSize == m_virtualPayloadSize,"packetPayloadSize is not equal to "<<m_virtualPayloadSize);
 
 	map<uint32_t, string>::iterator it = interestSent.find(signature);
 	if(it != interestSent.end())
@@ -207,7 +209,7 @@ void nrConsumer::laneChange(std::string oldLane, std::string newLane)
 	  nrheader.setPreLane(oldLane);
 	  nrheader.setCurrentLane(lane);
 
-	  Ptr<Packet> newPayload = Create<Packet> ();
+	  Ptr<Packet> newPayload = Create<Packet> (m_virtualPayloadSize);
 	  newPayload->AddHeader(nrheader);
 	  interest->SetPayload(newPayload);
 

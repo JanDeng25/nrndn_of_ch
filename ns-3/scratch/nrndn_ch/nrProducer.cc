@@ -162,7 +162,7 @@ void nrProducer::sendResourcePacket()
 	string lane = m_sensor->getLane();
 	nrheader.setCurrentLane(lane);
 	nrheader.setPreLane(lane);
-	Ptr<Packet> newPayload	= Create<Packet> ();
+	Ptr<Packet> newPayload	= Create<Packet> (m_virtualPayloadSize);
 	newPayload->AddHeader(nrheader);
 
 	data->SetPayload(newPayload);

@@ -962,7 +962,7 @@ void NavigationRouteHeuristic::ReplyConfirmPacket(Ptr<Interest> interest)
 
 	nrheader.setTTL(ttl);
 
-	Ptr<Packet> newPayload	= Create<Packet> ();
+	Ptr<Packet> newPayload	= Create<Packet> (m_virtualPayloadSize);
 	newPayload->AddHeader(nrheader);
 
 	data->SetPayload(newPayload);
@@ -1002,7 +1002,7 @@ void NavigationRouteHeuristic::ReplyTablePacket(Ptr<Interest> interest)
 		tableheader.setPIT(m_pit->getPIT());
 	tableheader.setFIB(m_fib->getFIB());
 
-	Ptr<Packet> newPayload	= Create<Packet> ();
+	Ptr<Packet> newPayload	= Create<Packet> (m_virtualPayloadSize);
 	newPayload->AddHeader(tableheader);
 
 	ndn::nrndn::PacketTypeTag typeTag(TABLE_PACKET );
@@ -1035,7 +1035,7 @@ void NavigationRouteHeuristic::ReplyDataPacket(Ptr<Interest> interest)
 	nrheader.setPreLane(m_sensor->getLane());
 	//sourceId not change????????????????????????!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-	Ptr<Packet> newPayload	= Create<Packet> ();
+	Ptr<Packet> newPayload	= Create<Packet> (m_virtualPayloadSize);
 	newPayload->AddHeader(nrheader);
 
 	data->SetPayload(newPayload);
@@ -1195,7 +1195,7 @@ void NavigationRouteHeuristic::SendHello()
 	Ptr<Name> name = ns3::Create<Name>('/'+LaneName);
 
 	//2. setup payload
-	Ptr<Packet> newPayload	= Create<Packet> ();
+	Ptr<Packet> newPayload	= Create<Packet> (m_virtualPayloadSize);
 	ndn::nrndn::nrHeader nrheader;
 	nrheader.setX(x);
 	nrheader.setY(y);
