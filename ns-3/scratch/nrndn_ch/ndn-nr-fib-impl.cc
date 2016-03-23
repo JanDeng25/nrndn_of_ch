@@ -122,7 +122,7 @@ NrFibImpl::AddFibEntry (const Ptr<const Name> &prefix, std::string lane,uint32_t
 		entry->AddIncomingNeighbors(lane, ttl);
 		Ptr<Entry> fibEntry = DynamicCast<Entry>(entry);
 		m_fibContainer.push_back(fibEntry);
-		this->Print(std::cout);
+		//this->Print(std::cout);
 		return;
 	}
 	else
@@ -134,7 +134,7 @@ NrFibImpl::AddFibEntry (const Ptr<const Name> &prefix, std::string lane,uint32_t
 			if(fibEntry->getEntryName() == prefix->toUri())
 			{
 				fibEntry->AddIncomingNeighbors(lane,ttl);
-				this->Print(std::cout);
+				//this->Print(std::cout);
                 return;
 			}
 		}
@@ -142,10 +142,26 @@ NrFibImpl::AddFibEntry (const Ptr<const Name> &prefix, std::string lane,uint32_t
 		entry->AddIncomingNeighbors(lane, ttl);
 		Ptr<Entry> fibEntry = DynamicCast<Entry>(entry);
 		m_fibContainer.push_back(fibEntry);
-		this->Print(std::cout);
+		//this->Print(std::cout);
 	}
     return;
 }
+
+//Mar 17,2016: merge two fib table
+ void
+ NrFibImpl::mergeFib(std::vector<Ptr<Entry> >  fibCon){
+	 if(fibCon.size()==0)
+		 return;
+	 std::vector<Ptr<Entry> >::iterator fib_fibCon = fibCon.begin();
+	 for(;fib_fibCon!=fibCon.end();++fib_fibCon){
+		 Ptr<EntryNrImpl> fib_fibConEntry = DynamicCast<EntryNrImpl>(*fib_fibCon);
+		 std::unordered_map< std::string,uint32_t >::const_iterator incomingnb = fib_fibConEntry->getIncomingnbs().begin();
+		 for(;incomingnb != fib_fibConEntry->getIncomingnbs().end(); ++incomingnb){
+			 AddFibEntry(fib_fibConEntry->GetPrefixPtr(),incomingnb->first,incomingnb->second);
+		 }
+	 }
+
+ }
 
 void
 NrFibImpl::Print (std::ostream& os) const

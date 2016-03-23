@@ -165,6 +165,8 @@ private:
 
 	void PrepareDetectPacket(Ptr<Interest> interest);
 
+	void PreparePacket(Ptr<Interest> interest);
+
 
 	void SendInterestPacket(Ptr<Interest> interest);
 

@@ -87,7 +87,7 @@ NrPitImpl::NotifyNewAggregate ()
 }
 
 //add by DJ on Jan 4,2016:update pit
-bool NrPitImpl::UpdatePit(std::string lane,Ptr<Interest> interest)
+bool NrPitImpl::UpdatePit(std::string lane,Ptr<const Interest> interest)
 {
 	if(m_pitContainer.empty())
 	{
@@ -127,6 +127,22 @@ bool NrPitImpl::UpdatePit(std::string lane,Ptr<Interest> interest)
 	}
 	return true;
 }
+
+//Mar 17,2016: merge two pit table
+ void
+ NrPitImpl::mergePit(std::vector<Ptr<Entry> >  pitCon){
+	 if(pitCon.size()==0)
+		 return;
+	 std::vector<Ptr<Entry> >::iterator pit_pitCon = pitCon.begin();
+	 for(;pit_pitCon!=pitCon.end();++pit_pitCon){
+		 Ptr<EntryNrImpl> pit_pitConEntry = DynamicCast<EntryNrImpl>(*pit_pitCon);
+		 std::unordered_set< std::string >::const_iterator incomingnb = pit_pitConEntry->getIncomingnbs().begin();
+		 for(;incomingnb != pit_pitConEntry->getIncomingnbs().end(); ++incomingnb){
+			 UpdatePit(*incomingnb, pit_pitConEntry->GetInterest());
+		 }
+	 }
+
+ }
 
 //add by DJ on Jan 4,2016:update pit
 bool NrPitImpl::RemovePitEntry(const Name& name)

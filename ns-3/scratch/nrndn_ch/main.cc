@@ -116,17 +116,14 @@ private:
 
   //hitRate: among all the interested nodes, how many are received
   double hitRate;
-
-  //accuracyRate: among all the nodes received, how many are interested
-  double accuracyRate;
-  double arrivalRate;
   uint32_t ForwardTimes;
   double averageInterestForwardTimes;
   double averageDataForwardTimes;
   double averageDelay;
-  uint32_t SumForwardTimes;
-  uint32_t detectTimes;
-  uint32_t interestNum;
+  uint32_t tableSum;
+  double averageDetectRate;
+  double averageConfirmRate;
+  double averageForwardSum;
 
   bool noFwStop;
 
@@ -185,21 +182,20 @@ nrndnExample::nrndnExample () :
   //phyMode("OfdmRate24Mbps"),
   verbose (false),
   flood(false),
-  transRange(300),//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  transRange(500),//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   HelloLogEnable(true),
   accidentNum(30),//默认3
   method(0),
   interestFrequency(0.5),//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1
   hitRate(0),
-  accuracyRate(0),
-  arrivalRate(0),
   ForwardTimes(0),
   averageInterestForwardTimes(0),
   averageDataForwardTimes(0),
   averageDelay(0),
-  SumForwardTimes(0),
-  detectTimes(0),
-  interestNum(0),
+  tableSum(0),
+  averageDetectRate(0),
+  averageConfirmRate(0),
+  averageForwardSum(0),
   noFwStop(false),
   TTLMax(3),
   virtualPayloadSize(1024)
@@ -366,14 +362,12 @@ nrndnExample::Report ()
 			<<" forward times:"<<ForwardTimes<<'\t'
 			<<" average interest forwards times:"<<averageInterestForwardTimes<<'\t'
 			<<" average data froward times:"<<averageDataForwardTimes<<'\t'
-			<<" interest num:"<<interestNum<<'\t'
-			<<" detect num:"<<detectTimes<<'\t'
-			//<<SumForwardTimes<<'\t'
-			//<<nrUtils::InterestByteSent<<'\t'
-			//<<nrUtils::HelloByteSent<<'\t'
-			//<<nrUtils::DataByteSent<<'\t'
-			//<<nrUtils::ByteSent
+			<<" table Sum:"<<tableSum<<'\t'
+			<<" average Detect Rate:"<<averageDetectRate<<'\t'
+			<<" average Confirm Rate:"<<averageConfirmRate<<'\t'
+			<<" average Forward Sum:"<<averageForwardSum<<'\t'
 			<<endl;
+
 }
 
 void
@@ -735,18 +729,21 @@ nrndnExample::getStatistic()
 	averageDelay = nrUtils::GetAverageDelay();
 
 	//5. get average data forward times
-	ForwardTimes = nrUtils::GetForwardTimes();
+	ForwardTimes = nrUtils::GetForwardSum();
 
 	//6. get average interest forward times
-	averageInterestForwardTimes = nrUtils::GetAverageInterestForwardTimes();
+	//averageInterestForwardTimes = nrUtils::GetAverageInterestForwardTimes();
 
-	averageDataForwardTimes = nrUtils::GetAverageInterestForwardTimes();
+	//averageDataForwardTimes = nrUtils::GetAverageInterestForwardTimes();
 
-	interestNum = nrUtils::GetInterestNum();
+	tableSum = nrUtils::GetTableSum();
 
-	detectTimes = nrUtils::GetDetectTimes();
+	averageDetectRate = nrUtils::GetAverageDetectRate();
 
-	//SumForwardTimes = AverageDataForwardPair.first + AverageInterestForwardPair.first;
+	averageConfirmRate = nrUtils::GetAverageConfirmRate();
+
+	averageForwardSum = nrUtils::GetAverageForwardSum();
+
 }
 
 

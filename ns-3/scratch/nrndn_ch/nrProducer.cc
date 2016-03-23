@@ -93,7 +93,9 @@ void nrProducer::StartApplication()
 	App::StartApplication();
 	NS_LOG_INFO("NodeID: " << GetNode ()->GetId ());
 
-	Simulator::Schedule (Seconds (15.0), &nrProducer::sendResourcePacket, this);
+	double delay= GetNode ()->GetId () / 2;
+
+	Simulator::Schedule (Seconds (15.0+ delay), &nrProducer::sendResourcePacket, this);
 	std::cout<<"siu:"<<"Start producer Application: " << GetNode ()->GetId ()<<endl;
 }
 
@@ -127,6 +129,7 @@ void nrProducer::sendResourcePacket()
 {
 	////m_sensor->getLane();
 	if (!m_active)  return;
+	 cout<<"producer send resource packet"<<endl;
 	if(isJuction(m_sensor->getLane()))
 	{
 		 Simulator::Schedule (Seconds (5.0), &nrProducer::sendResourcePacket, this);

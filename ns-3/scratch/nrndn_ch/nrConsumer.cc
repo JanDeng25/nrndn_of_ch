@@ -98,7 +98,7 @@ void nrConsumer::ScheduleNextPacket()
 	if(GetNode()->GetId() > 30)
 		return;
 
-	double delay =( GetNode()->GetId()  - 9 ) * 2 + 60;
+	double delay =GetNode()->GetId()  - 9  + 60;
 
 	Simulator::Schedule (Seconds (delay), & nrConsumer::SendPacket, this);
 }
@@ -107,6 +107,7 @@ void nrConsumer::SendPacket()
 {
 
 	  if (!m_active) return;
+	 // cout<<"consumer send packet"<<endl;
 	  if(isJuction(m_sensor->getLane()))
 	  {
 		  Simulator::Schedule (Seconds (5.0), & nrConsumer::SendPacket, this);
@@ -144,8 +145,7 @@ void nrConsumer::SendPacket()
 	  interestSent[interest->GetNonce()] = prefix.toUri() ;
 	  msgTime[interest->GetNonce()] = Simulator::Now().GetSeconds();
 
-	  nrUtils::IncreaseNodeCounter();
-	  nrUtils::IncreaseInterestSum();
+	  nrUtils:: IncreaseInterestedNodeSum();
 
 }
 
@@ -153,22 +153,22 @@ void nrConsumer::OnData(Ptr<const Data> data)
 {
 	 if (!m_active) return;
 	NS_LOG_FUNCTION (this);
+	 //cout<<"consumer on data"<<endl;
 	Ptr<Packet> nrPayload	= data->GetPayload()->Copy();
+	uint32_t packetPayloadSize = nrPayload->GetSize();
+	NS_ASSERT_MSG(packetPayloadSize == m_virtualPayloadSize,"packetPayloadSize is not equal to "<<m_virtualPayloadSize);
 	const Name& name = data->GetName();
 	nrHeader nrheader;
 	nrPayload->RemoveHeader(nrheader);
 	uint32_t nodeId=nrheader.getSourceId();
 	uint32_t signature=data->GetSignature();
-	uint32_t packetPayloadSize = nrPayload->GetSize();
-
-	NS_ASSERT_MSG(packetPayloadSize == m_virtualPayloadSize,"packetPayloadSize is not equal to "<<m_virtualPayloadSize);
 
 	map<uint32_t, string>::iterator it = interestSent.find(signature);
 	if(it != interestSent.end())
 	{
-		nrUtils::IncreaseInterestedNodeCounter();
+		nrUtils::IncreaseInterestedNodeReceivedSum();
 		double delay = Simulator::Now().GetSeconds() - msgTime[signature];
-		nrUtils::updateDelay(delay);
+		nrUtils::GetDelaySum(delay);
 		std::cout<<m_node->GetId()<<"\treceived data "<<name.toUri()<<" from "<<nodeId<<"\tSignature "<<signature<<endl;
 		interestSent.erase(it);
 	}
@@ -178,6 +178,7 @@ void nrConsumer::OnData(Ptr<const Data> data)
 void nrConsumer::laneChange(std::string oldLane, std::string newLane)
 {
 	 if (!m_active) return;
+	 //cout<<"consumer lane change"<<endl;
 	if(interestSent.empty()) return;
 	if(isJuction(newLane) ) return;
 	if(oldLane == m_oldLane) return;
@@ -231,6 +232,7 @@ void nrConsumer::NotifyNewAggregate()
 
 void nrConsumer::DoInitialize(void)
 {
+	 //cout<<"consumer send packet"<<endl;
 	if (m_forwardingStrategy == 0)
 	{
 		//m_forwardingStrategy = GetObject<fw::nrndn::NavigationRouteHeuristic>();

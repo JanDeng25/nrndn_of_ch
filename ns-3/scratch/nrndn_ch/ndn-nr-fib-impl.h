@@ -146,6 +146,9 @@ public:
    void
    AddFibEntry (const Ptr<const Name> &prefix, std::string lane, uint32_t ttl);
 
+   //Mar 17,2016: merge two fib table
+   void mergeFib(std::vector<Ptr<Entry> >  fibCon);
+
    std::vector<Ptr<Entry> > getFIB(){
 	   return m_fibContainer;
    }
@@ -153,6 +156,11 @@ public:
    void setFIB( std::vector<Ptr<Entry> > fib)
    {
 	   m_fibContainer = fib;
+   }
+
+   void cleanFIB()
+   {
+	   m_fibContainer.clear();
    }
 protected:
   // inherited from Object class

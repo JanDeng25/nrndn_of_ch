@@ -106,7 +106,10 @@ public:
   //bool UpdatePit(const std::vector<std::string>& route,const uint32_t& id);
 
   //add by DJ on Jan 4,2016:update pit
-  bool UpdatePit(std::string lane,Ptr<Interest> interest);
+  bool UpdatePit(std::string lane,Ptr<const Interest> interest);
+
+  //Mar 17,2016: merge two pit table
+  void mergePit(std::vector<Ptr<Entry> >  pitCon);
 
   //add by DJ on Jan 4,2016:remove pit
   bool RemovePitEntry(const Name& name);
@@ -122,6 +125,10 @@ public:
   void setPIT(std::vector<Ptr<Entry> > pit)
   {
 	  m_pitContainer = pit;
+  }
+  void cleanPIT()
+  {
+	  m_pitContainer.clear();
   }
 protected:
   // inherited from Object class

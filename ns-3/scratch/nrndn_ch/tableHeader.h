@@ -13,9 +13,12 @@
 #include "ns3/ndn-name.h"
 #include "ns3/ndn-pit-entry.h"
 #include "ns3/ndn-fib-entry.h"
+#include "ns3/ndn-header-helper.h"
 
 #include "ndn-pit-entry-nrimpl.h"
 #include "ndn-fib-entry-nrimpl.h"
+#include "ndn-nr-pit-impl.h"
+#include "ndn-nr-fib-impl.h"
 
 #include <vector>
 
@@ -51,30 +54,47 @@ public:
 		m_sourceId = sourceId;
 	}
 
+	uint32_t getSignature()
+	{
+		return m_signature;
+	}
+
+	void setSignature(uint32_t s)
+	{
+		m_signature = s;
+	}
+
 	std::vector<Ptr<pit::Entry> >	getPitContainer()
 	{
+		//std::cout<<"get pit container:"<<std::endl;
 		return m_pitContainer;
 	}
 
 	std::vector<Ptr<fib::Entry > >	getFibContainer()
 	{
+		//std::cout<<"get fib container:"<<std::endl;
 		return m_fibContainer;
 	}
 
 	void setPIT(std::vector<Ptr<pit::Entry> > pit)
 	{
+		//std::cout<<"set pit "<<std::endl;
 		m_pitContainer = pit;
 	}
 
 	void setFIB(std::vector<Ptr<fib::Entry > > fib)
 	{
+		//std::cout<<"set fib"<<std::endl;
 		m_fibContainer = fib;
 	}
 
 private:
 	uint32_t		m_sourceId;	//\ (source)	id of source node (source)
+	uint32_t        m_signature;
 	 std::vector<Ptr<pit::Entry> >			m_pitContainer;
 	std::vector<Ptr<fib::Entry> >		m_fibContainer;
+	Ptr<ndn::pit::nrndn::NrPitImpl> m_pit;
+	Ptr<ndn::fib::nrndn::NrFibImpl> m_fib;
 
 	friend class pit::nrndn::EntryNrImpl;
 	friend class fib::nrndn::EntryNrImpl;

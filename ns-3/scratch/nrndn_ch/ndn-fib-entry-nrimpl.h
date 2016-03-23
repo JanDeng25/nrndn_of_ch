@@ -64,6 +64,10 @@ public:
 		return m_data_name;
 
 	}
+	//Mar 17,2016: get pointer of prefix
+	const Ptr<const Name> & GetPrefixPtr(){
+		return m_prefix;
+	}
 	void Print(std::ostream &os) const;
 	void setDataName(std::string name);
 	void setNb(std::unordered_map< std::string,uint32_t >  nb);
