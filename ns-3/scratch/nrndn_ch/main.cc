@@ -589,14 +589,14 @@ nrndnExample::InstallNrndnApplications ()
 	consumerHelper.SetAttribute ("PayloadSize", UintegerValue (virtualPayloadSize));
 
 	for (NodeContainer::Iterator i = nodes.Begin (); i != nodes.End (); ++i)
-		if((*i)->GetId() > 9)
+		if((*i)->GetId() > 14)
 			consumerHelper.Install(*i);
 	/////nrUtils::appIndex["ns3::ndn::nrndn::nrConsumer"]=0;
 
 	ndn::AppHelper producerHelper ("ns3::ndn::nrndn::nrProducer");
 	//producerHelper.SetPrefix ("/");
 	producerHelper.SetAttribute ("PayloadSize", UintegerValue (virtualPayloadSize));
-	for(uint32_t i=0; i<10; ++i)
+	for(uint32_t i=0; i<15; ++i)
 		producerHelper.Install(nodes.Get (i));
 	/////nrUtils::appIndex["ns3::ndn::nrndn::nrProducer"]=1;
 
@@ -664,8 +664,12 @@ void nrndnExample::InstallDjNdnApplications()///////////////////////////////////
 
 void nrndnExample::Look_at_clock()
 {
-
 	cout<<"\nTime now: "<<Simulator::Now().GetSeconds()<<endl;
+	if(int(Simulator::Now().GetSeconds()) % 10 == 3)
+		nrUtils::CoutFullFibNum();
+	if(int(Simulator::Now().GetSeconds() )% 10 == 7)
+			nrUtils::SetFullFibNumZero();
+
 
 	Simulator::Schedule(Seconds(clockInterval),&nrndnExample::Look_at_clock,this);
 }

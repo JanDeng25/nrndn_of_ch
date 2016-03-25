@@ -95,10 +95,10 @@ void nrConsumer::StopApplication()
 
 void nrConsumer::ScheduleNextPacket()
 {
-	if(GetNode()->GetId() > 30)
+	if(GetNode()->GetId() > 35)
 		return;
 
-	double delay =GetNode()->GetId()  - 9  + 60;
+	double delay =GetNode()->GetId()  - 14  + 65;
 
 	Simulator::Schedule (Seconds (delay), & nrConsumer::SendPacket, this);
 }
@@ -155,14 +155,15 @@ void nrConsumer::OnData(Ptr<const Data> data)
 	NS_LOG_FUNCTION (this);
 	 //cout<<"consumer on data"<<endl;
 	Ptr<Packet> nrPayload	= data->GetPayload()->Copy();
-
-	const Name& name = data->GetName();
-	nrHeader nrheader;
+	nrndnHeader nrheader;
 	nrPayload->RemoveHeader(nrheader);
-	uint32_t nodeId=nrheader.getSourceId();
-	uint32_t signature=data->GetSignature();
 	uint32_t packetPayloadSize = nrPayload->GetSize();
 	NS_ASSERT_MSG(packetPayloadSize == m_virtualPayloadSize,"packetPayloadSize is not equal to "<<m_virtualPayloadSize);
+	const Name& name = data->GetName();
+
+	uint32_t nodeId=nrheader.getSourceId();
+	uint32_t signature=data->GetSignature();
+
 	map<uint32_t, string>::iterator it = interestSent.find(signature);
 	if(it != interestSent.end())
 	{

@@ -95,7 +95,7 @@ void nrProducer::StartApplication()
 
 	double delay= GetNode ()->GetId () / 2;
 
-	Simulator::Schedule (Seconds (15.0+ delay), &nrProducer::sendResourcePacket, this);
+	Simulator::Schedule (Seconds (50.0+ delay), &nrProducer::sendResourcePacket, this);
 	std::cout<<"siu:"<<"Start producer Application: " << GetNode ()->GetId ()<<endl;
 }
 

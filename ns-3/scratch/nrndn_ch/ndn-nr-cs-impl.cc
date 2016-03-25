@@ -91,7 +91,7 @@ NrCsImpl::NotifyNewAggregate ()
 
 bool NrCsImpl::Add (Ptr<const Data> data)
 {
-	std::cout<<"add CS Entry  name:"<<data->GetName().toUri()<<std::endl;
+	//std::cout<<"add CS Entry  name:"<<data->GetName().toUri()<<std::endl;
 	if(Find(data->GetName()))
 	{
 		//this->Print(std::cout);

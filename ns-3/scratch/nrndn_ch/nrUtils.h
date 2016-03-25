@@ -59,6 +59,10 @@ public:
 	static void GetDelaySum(double d);//发送interest后收到data的总延时（有的收不到data）
 	static double GetAverageDelay();//平均延时：delaySum / interestedNodeSum
 
+	static void SetFullFibNumZero();
+	static void SetFullFibNum(uint32_t index, uint32_t num);
+	static void CoutFullFibNum();
+
 	//4 . appIndex
 	static AppIndexType appIndex;
 
@@ -86,7 +90,7 @@ public:
 	static double AverageForwardSum;//平均请求数据包的开销：（interestForwardSum+dataForwardSum+detectForwardSum+confirmForwardSum）/interestedNodeSum
 	static double AverageDelay;//平均延时：delaySum / interestedNodeSum
 
-	static uint32_t FullFibNum;
+	static uint32_t FullFibNum[801];
 };
 
 } /* namespace nrndn */

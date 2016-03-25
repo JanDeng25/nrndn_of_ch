@@ -175,7 +175,7 @@ private:
 	void SendHello ();
 
 
-
+	void fibnum();
 
 private:
 	typedef GreenYellowRed super;

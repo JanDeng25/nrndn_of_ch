@@ -40,7 +40,7 @@ EntryNrImpl::~EntryNrImpl ()
 std::unordered_set< std::string  >::iterator
 EntryNrImpl::AddIncomingNeighbors(std::string lane)
 {
-	std::cout<<"add PIT incomingNeighbors"<<std::endl;
+	//std::cout<<"add PIT incomingNeighbors"<<std::endl;
 	if(m_incomingnbs.empty())
 	{
 			m_incomingnbs.insert(lane);

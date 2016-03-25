@@ -145,7 +145,7 @@ void NavigationRouteHeuristic::Start()
 	}
 	m_runningCounter++;
 
-	if(m_node->GetId() < 10)
+	if(m_node->GetId() < 15)
 	{
 		uint32_t num =m_node->GetId() % 3 + 1;
 		Ptr<Name> dataName = Create<Name>("/");
@@ -154,6 +154,23 @@ void NavigationRouteHeuristic::Start()
 		data->SetName(dataName);
 		m_cs->Add(data);
 	}
+	Simulator::Schedule (Seconds (30), & NavigationRouteHeuristic::fibnum, this);
+}
+
+void NavigationRouteHeuristic::fibnum()
+{
+	if(int(Simulator::Now().GetSeconds() )% 10 == 0 )
+	{
+		if(m_fib->getFIB().size() == 3)
+			ndn::nrndn::nrUtils::SetFullFibNum(m_node->GetId(),3);
+		else if(m_fib->getFIB().size() == 2)
+			ndn::nrndn::nrUtils::SetFullFibNum(m_node->GetId(),2);
+		else if(m_fib->getFIB().size() == 1)
+			ndn::nrndn::nrUtils::SetFullFibNum(m_node->GetId(),1);
+		else if(m_fib->getFIB().size() == 0)
+			ndn::nrndn::nrUtils::SetFullFibNum(m_node->GetId(),0);
+	}
+	Simulator::Schedule (Seconds (2), & NavigationRouteHeuristic::fibnum, this);
 }
 
 void NavigationRouteHeuristic::Stop()
@@ -285,7 +302,7 @@ void NavigationRouteHeuristic::OnInterest(Ptr<Face> face,
 	double disX =m_sensor->getX() - x;
 	double disY =m_sensor->getY() - y;
 	double distance = sqrt(disX *disX + disY * disY);
-	double interval = (600 - distance) * 3;
+	double interval = (600 - distance) * 1.5;
 
 	if(DETECT_PACKET == interest->GetScope())
 	{
@@ -319,7 +336,7 @@ void NavigationRouteHeuristic::OnInterest(Ptr<Face> face,
 	{
 		if(!isDuplicatedInterest(nodeId,seq) )
 		{
-			cout<<"node: "<<m_node->GetId()<<" receive interest packet from "<<nodeId<<endl;
+			//cout<<"node: "<<m_node->GetId()<<" receive interest packet from "<<nodeId<<endl;
 			if(!isSameLane(m_sensor->getLane(),currentLane)&& !isSameLane(m_sensor->getLane(),preLane))
 			{//不在应接受的下一跳路段，也不在与interest包同路段
 				//cout<<"not on the section of interest packet, my section:"<<m_sensor->getLane()<<" current lane:"<<currentLane<<" pre lane"<<preLane<<endl;
@@ -336,7 +353,7 @@ void NavigationRouteHeuristic::OnInterest(Ptr<Face> face,
 			}
 			else if(m_pit->Find(interest->GetName()) && !isJuction(m_sensor->getLane()))
 			{
-				cout<<"pit find"<<endl;
+				//cout<<"pit find"<<endl;
 				//有pit记录，更新pit，不转发
 				m_pit->UpdatePit(preLane, interest);
 				m_interestNonceSeen.Put(interest->GetNonce(),true);
@@ -394,8 +411,8 @@ void NavigationRouteHeuristic::OnInterest(Ptr<Face> face,
 	{
 		if(isSameLane(m_sensor->getLane(), currentLane) && !m_fib->getFIB().empty())
 		{
-			//cout<<"node: "<<m_node->GetId()<<" receive ASK_FOR_TABLE packet from "<<nodeId<<endl;
-			Time sendInterval = MilliSeconds(distance *1.5);
+			cout<<"node: "<<m_node->GetId()<<" receive ASK_FOR_TABLE packet from "<<nodeId<<endl;
+			Time sendInterval = MilliSeconds(distance*1.5);
 			Time delay = MilliSeconds(1000);
 
 			if(m_fib->getFIB().size() == 3)//表格完善的车辆优先回复
@@ -444,6 +461,7 @@ void NavigationRouteHeuristic::OnData(Ptr<Face> face, Ptr<Data> data)
 	name.appendNumber(ASK_FOR_TABLE);
 	 if(name == data->GetName())//收到其他节点回复的table packet（非请求table的表格）
 	{
+		 cout<<"receive table packet"<<endl;
 		ns3::ndn::nrndn::tableHeader tableheader;
 		Ptr<Packet> nrPayload=data->GetPayload()->Copy();
 		nrPayload->PeekHeader(tableheader);
@@ -459,10 +477,11 @@ void NavigationRouteHeuristic::OnData(Ptr<Face> face, Ptr<Data> data)
 		return;
 	}
 
-	Ptr<const Packet> nrPayload	= data->GetPayload();
+	Ptr<Packet> nrPayload	= data->GetPayload()->Copy();
 	ndn::nrndn::nrndnHeader nrheader;
-	nrPayload->PeekHeader(nrheader);
-	//NS_ASSERT_MSG(nrPayload->GetSize() == m_virtualPayloadSize,"packetPayloadSize is not equal to "<<m_virtualPayloadSize);
+	nrPayload->RemoveHeader(nrheader);
+	//cout<<"header size:"<<nrheader.GetSerializedSize()<<endl;
+	NS_ASSERT_MSG(nrPayload->GetSize() == m_virtualPayloadSize,"packetPayloadSize is not equal to "<<m_virtualPayloadSize);
 	FwHopCountTag hopCountTag;
 	nrPayload	->PeekPacketTag(hopCountTag);
 	ndn::nrndn::PacketTypeTag packetTypeTag;
@@ -480,8 +499,6 @@ void NavigationRouteHeuristic::OnData(Ptr<Face> face, Ptr<Data> data)
 	double disY =m_sensor->getY() - y;
 	double distance =sqrt( disX * disX + disY * disY);
 	double interval = (600 - distance) * 1.5 ;
-
-
 
 	if(RESOURCE_PACKET == packetTypeTag.Get())
 	{
@@ -524,8 +541,8 @@ void NavigationRouteHeuristic::OnData(Ptr<Face> face, Ptr<Data> data)
 	{
 		if(!isDuplicatedData(nodeId,signature))
 		{
-
-			cout<<"node: "<<m_node->GetId()<<" receive data packet from "<<nodeId<<endl;
+			//cout<<"header size:"<<nrheader.GetSerializedSize()<<endl;
+			//cout<<"node: "<<m_node->GetId()<<" receive data packet from "<<nodeId<<endl;
 			m_cs->Add(data);
 			m_pit->RemovePitEntry(data->GetName());
 			NotifyUpperLayer(data);
@@ -713,7 +730,7 @@ void NavigationRouteHeuristic::ForwardResourcePacket(Ptr<Data> src)
 	nrPayload->RemovePacketTag( hopCountTag);
 	if(hopCountTag.Get() > 14)
 	{
-		m_dataSignatureSeen.Put(src->GetSignature(),true);
+		//m_dataSignatureSeen.Put(src->GetSignature(),true);
 		return;
 	}
 	nrPayload->AddPacketTag(hopCountTag);
@@ -1040,7 +1057,7 @@ void NavigationRouteHeuristic::ReplyDataPacket(Ptr<Interest> interest)
 
 	Ptr<Packet> newPayload	= Create<Packet> (m_virtualPayloadSize);
 	newPayload->AddHeader(nrheader);
-
+	cout<<"header size"<<nrheader.GetSerializedSize()<<endl;
 	data->SetPayload(newPayload);
 
 	ndn::nrndn::PacketTypeTag typeTag(DATA_PACKET );
@@ -1231,7 +1248,7 @@ void NavigationRouteHeuristic::laneChange(std::string oldLane, std::string newLa
 {
 	if (!m_running)  return;
 	if(isJuction(newLane)) return;
-	if(Simulator::Now().GetSeconds() <16) return;
+	if(Simulator::Now().GetSeconds() < 50) return;
 
 	if(oldLane == m_oldLane) return;
 	//cout<<m_node->GetId()<<" lane changed from "<<m_oldLane<<" to "<<newLane<<endl;
@@ -1241,8 +1258,8 @@ void NavigationRouteHeuristic::laneChange(std::string oldLane, std::string newLa
 		//m_fib->Print(cout);
 	//}
 	m_oldLane = oldLane;
-	m_pit->cleanPIT();/////////////////////////////////////
-	m_fib->cleanFIB();/////////////////////////////////////////////
+	//m_pit->cleanPIT();/////////////////////////////////////
+	//m_fib->cleanFIB();/////////////////////////////////////////////
 	Name name;
 	name.appendNumber(ASK_FOR_TABLE);
 	Ptr<Interest> interest = Create<Interest> (Create<Packet>(m_virtualPayloadSize));
@@ -1259,7 +1276,7 @@ void NavigationRouteHeuristic::laneChange(std::string oldLane, std::string newLa
 	nrheader.setPreLane(oldLane);
 	nrheader.setCurrentLane(lane);
 
-	Ptr<Packet> newPayload = Create<Packet> ();
+	Ptr<Packet> newPayload = Create<Packet> (m_virtualPayloadSize);
 	newPayload->AddHeader(nrheader);
 	interest->SetPayload(newPayload);
 
@@ -1272,7 +1289,7 @@ void NavigationRouteHeuristic::laneChange(std::string oldLane, std::string newLa
 	m_interestNonceSeen.Put(interest->GetNonce(),true);
 	//cout<<"node: "<<m_node->GetId()<<" ask for table on "<<lane<<endl;
 
-	SendInterestPacket(interest);
+	//SendInterestPacket(interest);
 }
 
 bool NavigationRouteHeuristic::isJuction(std::string lane)
