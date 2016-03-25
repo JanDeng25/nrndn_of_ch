@@ -86,6 +86,7 @@ public:
 	static double AverageForwardSum;//平均请求数据包的开销：（interestForwardSum+dataForwardSum+detectForwardSum+confirmForwardSum）/interestedNodeSum
 	static double AverageDelay;//平均延时：delaySum / interestedNodeSum
 
+	static uint32_t FullFibNum;
 };
 
 } /* namespace nrndn */

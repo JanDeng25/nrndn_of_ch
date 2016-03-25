@@ -462,7 +462,7 @@ void NavigationRouteHeuristic::OnData(Ptr<Face> face, Ptr<Data> data)
 	Ptr<const Packet> nrPayload	= data->GetPayload();
 	ndn::nrndn::nrndnHeader nrheader;
 	nrPayload->PeekHeader(nrheader);
-
+	//NS_ASSERT_MSG(nrPayload->GetSize() == m_virtualPayloadSize,"packetPayloadSize is not equal to "<<m_virtualPayloadSize);
 	FwHopCountTag hopCountTag;
 	nrPayload	->PeekPacketTag(hopCountTag);
 	ndn::nrndn::PacketTypeTag packetTypeTag;
@@ -480,6 +480,8 @@ void NavigationRouteHeuristic::OnData(Ptr<Face> face, Ptr<Data> data)
 	double disY =m_sensor->getY() - y;
 	double distance =sqrt( disX * disX + disY * disY);
 	double interval = (600 - distance) * 1.5 ;
+
+
 
 	if(RESOURCE_PACKET == packetTypeTag.Get())
 	{
@@ -522,6 +524,7 @@ void NavigationRouteHeuristic::OnData(Ptr<Face> face, Ptr<Data> data)
 	{
 		if(!isDuplicatedData(nodeId,signature))
 		{
+
 			cout<<"node: "<<m_node->GetId()<<" receive data packet from "<<nodeId<<endl;
 			m_cs->Add(data);
 			m_pit->RemovePitEntry(data->GetName());
@@ -1195,7 +1198,7 @@ void NavigationRouteHeuristic::SendHello()
 	Ptr<Name> name = ns3::Create<Name>('/'+LaneName);
 
 	//2. setup payload
-	Ptr<Packet> newPayload	= Create<Packet> (m_virtualPayloadSize);
+	Ptr<Packet> newPayload	= Create<Packet> ();
 	ndn::nrndn::nrHeader nrheader;
 	nrheader.setX(x);
 	nrheader.setY(y);

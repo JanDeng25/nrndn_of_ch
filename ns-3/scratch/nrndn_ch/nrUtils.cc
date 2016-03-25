@@ -43,6 +43,8 @@ double nrUtils::AverageConfirmRate = 0;
 double nrUtils::AverageForwardSum= 0;//平均请求数据包的开销：（interestForwardSum+dataForwardSum+detectForwardSum+confirmForwardSum）/interestedNodeSum
 double nrUtils::AverageDelay= 0;//平均延时：delaySum / interestedNodeSum
 
+ uint32_t nrUtils::FullFibNum = 0;
+
 nrUtils::nrUtils()
 {
 	// TODO Auto-generated constructor stub

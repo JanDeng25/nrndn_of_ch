@@ -161,10 +161,8 @@ void nrConsumer::OnData(Ptr<const Data> data)
 	nrPayload->RemoveHeader(nrheader);
 	uint32_t nodeId=nrheader.getSourceId();
 	uint32_t signature=data->GetSignature();
-
 	uint32_t packetPayloadSize = nrPayload->GetSize();
 	NS_ASSERT_MSG(packetPayloadSize == m_virtualPayloadSize,"packetPayloadSize is not equal to "<<m_virtualPayloadSize);
-
 	map<uint32_t, string>::iterator it = interestSent.find(signature);
 	if(it != interestSent.end())
 	{
