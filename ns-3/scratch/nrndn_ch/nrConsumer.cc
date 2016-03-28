@@ -107,7 +107,7 @@ void nrConsumer::SendPacket()
 {
 
 	  if (!m_active) return;
-	 // cout<<"consumer send packet"<<endl;
+	 //cout<<"consumer send packet"<<endl;
 	  if(isJuction(m_sensor->getLane()))
 	  {
 		  Simulator::Schedule (Seconds (5.0), & nrConsumer::SendPacket, this);
@@ -137,7 +137,7 @@ void nrConsumer::SendPacket()
 	  newPayload->AddHeader(nrheader);
 	  interest->SetPayload(newPayload);
 
-	  cout<<"node: "<<GetNode()->GetId()<<"  send interest packet,name: "<<prefix.toUri()<<" in consumer"<<endl;
+	  //cout<<"node: "<<GetNode()->GetId()<<"  send interest packet,name: "<<prefix.toUri()<<" in consumer"<<endl;
 
 	  m_transmittedInterests (interest, this, m_face);
 	  m_face->ReceiveInterest (interest);
@@ -153,7 +153,7 @@ void nrConsumer::OnData(Ptr<const Data> data)
 {
 	 if (!m_active) return;
 	NS_LOG_FUNCTION (this);
-	 //cout<<"consumer on data"<<endl;
+	// cout<<"consumer on data"<<endl;
 	Ptr<Packet> nrPayload	= data->GetPayload()->Copy();
 	nrndnHeader nrheader;
 	nrPayload->RemoveHeader(nrheader);

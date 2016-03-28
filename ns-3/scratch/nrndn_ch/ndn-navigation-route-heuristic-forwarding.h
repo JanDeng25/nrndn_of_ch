@@ -177,6 +177,10 @@ private:
 
 	void fibnum();
 
+	void AskForTable();
+
+	bool IsConnected(string s1, string s2);
+
 private:
 	typedef GreenYellowRed super;
 	/**

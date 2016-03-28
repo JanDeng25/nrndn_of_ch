@@ -140,7 +140,7 @@ void nrProducer::sendResourcePacket()
 	Name prefix("/");
 	//std::cout<<"siu:"<<GetNode()->GetId()<<"sendResourcePacket:"<<m_prefix.toUri()<<std::endl;
 	prefix.appendNumber(num);
-	std::cout<<"siu:"<<GetNode()->GetId()<<"sendResourcePacket:"<<prefix.toUri()<<std::endl;
+	//std::cout<<"siu:"<<GetNode()->GetId()<<"sendResourcePacket:"<<prefix.toUri()<<std::endl;
 	Ptr<Data> data = Create<Data>(Create<Packet>(m_virtualPayloadSize));
 	Ptr<Name> dataName = Create<Name>(prefix);
 	//dataName->append(m_postfix);
@@ -179,7 +179,7 @@ void nrProducer::sendResourcePacket()
 	m_face->ReceiveData(data);
 	m_transmittedDatas(data, this, m_face);
 
-	Simulator::Schedule (Seconds (300.0), &nrProducer::sendResourcePacket, this);
+	//Simulator::Schedule (Seconds (300.0), &nrProducer::sendResourcePacket, this);
 }
 
 //Initialize the callback function after the base class initialize

@@ -79,7 +79,7 @@ TypeId tableHeader::GetInstanceTypeId() const
 
 uint32_t tableHeader::GetSerializedSize() const
 {
-	//std::cout<<"table header get size"<<std::endl;
+	///std::cout<<"table header get size"<<std::endl;
 	uint32_t size=0;
 	size += sizeof(m_sourceId);
 	size += sizeof(m_signature);
@@ -123,7 +123,8 @@ uint32_t tableHeader::GetSerializedSize() const
 			size += sizeof(uint32_t);
 		}
 	}
-	//std::cout<<"get deserialize size:"<<size<<std::endl;
+	std::cout<<"get deserialize size:"<<size<<std::endl;
+	Print(std::cout);
 	return size;
 }
 
@@ -267,9 +268,30 @@ uint32_t tableHeader::Deserialize(Buffer::Iterator start)
 void tableHeader::Print(std::ostream& os) const
 {
 	//os<<"nrHeader conatin: NodeID="<<m_sourceId<<"\t coordinate=("<<m_x<<","<<m_y<<") priorityList=";
-	std::vector<uint32_t>::const_iterator it;
-
-	os<<std::endl;
+	os<<"pit:"<<std::endl;
+	std::vector<Ptr<pit::Entry>>::const_iterator it;
+	for(it = m_pitContainer.begin(); it != m_pitContainer.end(); ++it)
+	{
+		Ptr<pit::nrndn::EntryNrImpl>  temp = DynamicCast<pit::nrndn::EntryNrImpl>(*it);
+		os<<"name: "<<temp->getEntryName()<<"next hop: ";
+		std::unordered_set< std::string > nexthop = temp->getIncomingnbs() ;
+		std::unordered_set< std::string >::const_iterator p = nexthop.begin();
+		for( ; p!=nexthop.end(); ++p)
+			os<<(*p)<<" ";
+		os<<std::endl;
+	}
+	os<<"fib:"<<std::endl;
+	std::vector<Ptr<fib::Entry>>::const_iterator it2;
+	for(it2 = m_fibContainer.begin(); it2 != m_fibContainer.end(); ++it2)
+	{
+		Ptr<fib::nrndn::EntryNrImpl>  temp = DynamicCast<fib::nrndn::EntryNrImpl>(*it2);
+		os<<"name: "<<temp->getEntryName()<<"next hop: ";
+		std::unordered_map< std::string,uint32_t > nexthop = temp->getIncomingnbs() ;
+		std::unordered_map< std::string,uint32_t >::const_iterator p = nexthop.begin();
+		for( ; p!=nexthop.end(); ++p)
+			os<<p->first<<" "<<p->second<<"  ";
+		os<<std::endl;
+	}
 }
 
 } /* namespace nrndn */
