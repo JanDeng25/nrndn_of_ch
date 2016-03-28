@@ -52,6 +52,14 @@ EntryNrImpl::AddIncomingNeighbors(std::string lane)
 
 	if(incomingnb==m_incomingnbs.end())
 	{//Not found
+		std::unordered_set< std::string >::iterator incomingnb_same = m_incomingnbs.begin();
+		while(incomingnb_same!=m_incomingnbs.end()){
+			if(lane == (*incomingnb_same) || isSameLane(lane,(*incomingnb_same)))
+			{
+				return incomingnb_same;
+			}
+			incomingnb_same++;
+		}
 		std::pair<std::unordered_set< std::string >::iterator,bool> ret = m_incomingnbs.insert (lane);
 		//this->Print(std::cout);
 		return ret.first;
@@ -133,6 +141,16 @@ void EntryNrImpl::Print(std::ostream& os) const
 	os<<std::endl;
 }
 
+bool EntryNrImpl::isSameLane(std::string lane1, std::string lane2)
+{
+	if(lane1.length() != 8 || lane2.length() != 8)
+				return false;
+			if(lane1[0] == lane2[5] && lane1[2]==lane2[7] && lane1[5]==lane2[0] && lane1[7]==lane2[2])
+				return true;
+			if(lane1 == lane2)
+				return true;
+			return false;
+}
 
 
 /*

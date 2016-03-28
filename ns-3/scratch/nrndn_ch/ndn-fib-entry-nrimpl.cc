@@ -49,6 +49,16 @@ EntryNrImpl::AddIncomingNeighbors(std::string lane,uint32_t ttl)
 		return m_incomingnbs.begin();
 	}
 	//AddNeighborTimeoutEvent(id);
+
+	//isSamelane
+	if(lane == m_incomingnbs.begin()->first || isSameLane(lane,m_incomingnbs.begin()->first)){
+		if(incomingnb->second > ttl)
+		{
+			m_incomingnbs.erase(m_incomingnbs.begin());
+			m_incomingnbs.insert(m_incomingnbs.begin(),std::pair<std::string,uint32_t>(lane,ttl));
+		}
+		return incomingnb;
+	}
 	std::unordered_map< std::string,uint32_t >::iterator incomingnb = m_incomingnbs.find(lane);
 
 	if(incomingnb==m_incomingnbs.end())
@@ -57,12 +67,18 @@ EntryNrImpl::AddIncomingNeighbors(std::string lane,uint32_t ttl)
 				//m_incomingnbs.insert (lane);
 		//return ret.first;
 		incomingnb = m_incomingnbs.begin();
-		while(incomingnb != m_incomingnbs.end() && incomingnb->second < ttl)
+		if(incomingnb->second > ttl)
+		{
+			m_incomingnbs.erase(m_incomingnbs.begin());
+			m_incomingnbs.insert(m_incomingnbs.begin(),std::pair<std::string,uint32_t>(lane,ttl));
+		}
+
+		/*while(incomingnb != m_incomingnbs.end() && incomingnb->second < ttl)
 		{
 			incomingnb++;
 		}
 		m_incomingnbs.insert(incomingnb,std::pair<std::string,uint32_t>(lane,ttl));
-		//this->Print(std::cout);
+		//this->Print(std::cout);*/
 		return incomingnb;
 	}
 	else
@@ -93,6 +109,16 @@ void EntryNrImpl::setDataName(std::string name)
 void EntryNrImpl::setNb(std::unordered_map< std::string,uint32_t >  nb)
 {
 	m_incomingnbs = nb;
+}
+bool EntryNrImpl::isSameLane(std::string lane1, std::string lane2)
+{
+	if(lane1.length() != 8 || lane2.length() != 8)
+			return false;
+		if(lane1[0] == lane2[5] && lane1[2]==lane2[7] && lane1[5]==lane2[0] && lane1[7]==lane2[2])
+			return true;
+		if(lane1 == lane2)
+			return true;
+		return false;
 }
 
 /*void EntryNrImpl::RemoveEntry()

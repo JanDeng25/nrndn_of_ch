@@ -71,6 +71,7 @@ public:
 	void Print(std::ostream &os) const;
 	void setDataName(std::string name);
 	void setNb(std::unordered_map< std::string,uint32_t >  nb);
+	bool isSameLane(std::string lane1, std::string lane2);
 //private:
 	//void AddNeighborTimeoutEvent(uint32_t id);
 

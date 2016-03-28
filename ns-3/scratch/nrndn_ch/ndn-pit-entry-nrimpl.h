@@ -74,6 +74,7 @@ public:
 	void Print(std::ostream &os) const;
 	void setInterestName(std::string name);
 	void setNb(std::unordered_set< std::string > nb);
+	bool isSameLane(std::string lane1, std::string lane2);
 private:
 	//std::unordered_map< uint32_t,EventId> m_nbTimeoutEvent;///< @brief it is a hashmap that record the timeout event of each neighbor id
 
