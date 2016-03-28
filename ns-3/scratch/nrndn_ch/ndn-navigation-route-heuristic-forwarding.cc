@@ -790,8 +790,10 @@ cout<<"forward data packet"<<endl;
 		///检查PIT表项，维护lanelist（备选下一跳）
 		//NS_ASSERT_MSG(m_pit->Find( src->GetName()) != 0,"pit not find ");
 
-		if(m_pit->Find( src->GetName()) == 0)
+		if(m_pit->Find( src->GetName()) == 0){
 			cout<<"pit not find"<<endl;
+			return ;
+		}
 		Ptr<ndn::pit::nrndn::EntryNrImpl> nexthop;
 		nexthop = DynamicCast<ndn::pit::nrndn::EntryNrImpl>(m_pit->Find( src->GetName()));
 
