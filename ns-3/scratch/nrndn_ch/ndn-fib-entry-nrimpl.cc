@@ -52,12 +52,12 @@ EntryNrImpl::AddIncomingNeighbors(std::string lane,uint32_t ttl)
 
 	//isSamelane
 	if(lane == m_incomingnbs.begin()->first || isSameLane(lane,m_incomingnbs.begin()->first)){
-		if(incomingnb->second > ttl)
+		if(m_incomingnbs.begin()->second > ttl)
 		{
 			m_incomingnbs.erase(m_incomingnbs.begin());
 			m_incomingnbs.insert(m_incomingnbs.begin(),std::pair<std::string,uint32_t>(lane,ttl));
 		}
-		return incomingnb;
+		return m_incomingnbs.begin();
 	}
 	std::unordered_map< std::string,uint32_t >::iterator incomingnb = m_incomingnbs.find(lane);
 
