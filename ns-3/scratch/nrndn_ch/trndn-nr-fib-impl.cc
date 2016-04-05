@@ -6,7 +6,7 @@
  */
 
 #include "trndn-nr-fib-impl.h"
-#include "ndn-fib-entry-nrimpl.h"
+#include "trndn-fib-entry-nrimpl.h"
 //#include "NodeSensor.h"
 
 

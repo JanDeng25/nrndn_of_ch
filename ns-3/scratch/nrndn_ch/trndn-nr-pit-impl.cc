@@ -6,7 +6,7 @@
  */
 
 #include "trndn-nr-pit-impl.h"
-#include "ndn-pit-entry-nrimpl.h"
+#include "trndn-pit-entry-nrimpl.h"
 //#include "NodeSensor.h"
 
 
