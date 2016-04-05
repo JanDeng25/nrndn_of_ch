@@ -81,6 +81,7 @@ void nrUtils::CoutFullFibNum()
 	}
 	cout<<"one fib:"<<one<<" two fib:"<<two<<" three fib:"<<three<<" zero fib:"<<zero<<endl;
 	cout<<"resource forward times:"<<ResourceForwardSum<<endl;
+	cout<<"hitrate:"<<AverageHitRate<<endl;
 }
 
 void nrUtils::IncreaseInterestedNodeSum()
@@ -132,11 +133,9 @@ void nrUtils::IncreaseResourceForwardCounter()
 {
 	ResourceForwardSum++;
 }
-uint32_t nrUtils::GetForwardSum()
+uint32_t nrUtils::GetResourceForwardSum()
 {
-	ForwardSum = InterestForwardSum + DataForwardSum + DetectForwardSum + ConfirmForwardSum
-			 	 	 	 	 	 + ResourceForwardSum ;
-	return ForwardSum;
+	return ResourceForwardSum;
 }
 uint32_t nrUtils::GetTableSum()//表格维护的总开销：asktableNum + tableNum
 {
@@ -145,23 +144,32 @@ uint32_t nrUtils::GetTableSum()//表格维护的总开销：asktableNum + tableN
 double nrUtils::GetAverageHitRate()
 {
 	double AverageHitRate = InterestedNodeReceivedSum / InterestedNodeSum;
-	return AverageHitRate;
+	std::cout<<"InterestedNodeReceivedSum:"<<InterestedNodeReceivedSum<<" InterestedNodeSum:"<<InterestedNodeSum<<" nrutils::hitrate: "<<AverageHitRate<<" 15/21:"<<15.0/21<<std::endl;
+	return  1.0*InterestedNodeReceivedSum /InterestedNodeSum;
 }
 double nrUtils::GetAverageDetectRate()//平均探测率：detectNum/interestedNodeSum
 {
-	double DetectRate = DetectNum/InterestedNodeSum;
+	double DetectRate = 1.0*DetectNum/InterestedNodeSum;
 	return DetectRate;
 }
 double nrUtils::GetAverageConfirmRate()
 {
 	if(DetectNum == 0)
 		return 0;
-	double ConfirmRate = ConfirmNum/DetectNum;
+	double ConfirmRate =1.0* ConfirmNum/DetectNum;
 	return ConfirmRate;
+}
+double nrUtils::GetAverageInterestForwardTimes()
+{
+	return 1.0*InterestForwardSum/InterestedNodeReceivedSum;
+}
+double nrUtils::GetAverageDataForwardTimes()
+{
+	return 1.0*DataForwardSum/InterestedNodeReceivedSum;
 }
 double nrUtils::GetAverageForwardSum()//平均请求数据包的开销：（interestForwardSum+dataForwardSum+detectForwardSum+confirmForwardSum）/interestedNodeSum
 {
-	double AverageForwardSum= (InterestForwardSum + DataForwardSum + DetectForwardSum + ConfirmForwardSum) / InterestedNodeSum;
+	double AverageForwardSum=1.0* (InterestForwardSum + DataForwardSum + DetectForwardSum + ConfirmForwardSum) /InterestedNodeReceivedSum;
 	return AverageForwardSum;
 }
 void nrUtils::GetDelaySum(double d)//发送interest后收到data的总延时（有的收不到data）
@@ -177,6 +185,11 @@ double nrUtils::GetAverageDelay()//平均延时：delaySum / interestedNodeSum
 	}
 	double AverageDelay = DelaySum / InterestedNodeReceivedSum;
 	return AverageDelay;
+}
+
+uint32_t  nrUtils::GetInterestedNodeReceivedSum()
+{
+	return InterestedNodeReceivedSum;
 }
 
 } /* namespace nrndn */

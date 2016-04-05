@@ -129,14 +129,15 @@ void nrProducer::sendResourcePacket()
 {
 	////m_sensor->getLane();
 	if (!m_active)  return;
-	 cout<<"producer send resource packet"<<endl;
+	if( GetNode()->GetId() >=6) return;
+	 //cout<<"producer send resource packet"<<endl;
 	if(isJuction(m_sensor->getLane()))
 	{
 		 Simulator::Schedule (Seconds (5.0), &nrProducer::sendResourcePacket, this);
 		 return;
 	}
 
-	uint32_t num = GetNode()->GetId() % 3 + 1;
+	uint32_t num = GetNode()->GetId() % 3+ 1;
 	Name prefix("/");
 	//std::cout<<"siu:"<<GetNode()->GetId()<<"sendResourcePacket:"<<m_prefix.toUri()<<std::endl;
 	prefix.appendNumber(num);

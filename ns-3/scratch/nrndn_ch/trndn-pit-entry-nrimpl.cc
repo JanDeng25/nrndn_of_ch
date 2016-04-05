@@ -6,7 +6,7 @@
  */
 
 
-#include "ndn-pit-entry-nrimpl.h"
+#include "trndn-pit-entry-nrimpl.h"
 #include "ns3/ndn-interest.h"
 #include "ns3/core-module.h"
 #include "ns3/ndn-forwarding-strategy.h"
@@ -37,31 +37,31 @@ EntryNrImpl::~EntryNrImpl ()
   
 }
 
-std::unordered_set< std::string  >::iterator
-EntryNrImpl::AddIncomingNeighbors(std::string lane)
+std::unordered_set< uint32_t  >::iterator
+EntryNrImpl::AddIncomingNeighbors(uint32_t nexthop)
 {
 	//std::cout<<"add PIT incomingNeighbors"<<std::endl;
 	if(m_incomingnbs.empty())
 	{
-			m_incomingnbs.insert(lane);
+			m_incomingnbs.insert(nexthop);
 			//this->Print(std::cout);
 			return m_incomingnbs.begin();
 	}
 	//AddNeighborTimeoutEvent(id);
-	std::unordered_set< std::string >::iterator incomingnb = m_incomingnbs.find(lane);
+	std::unordered_set< uint32_t >::iterator incomingnb = m_incomingnbs.find(nexthop);
 
 	if(incomingnb==m_incomingnbs.end())
 	{//Not found
-		std::unordered_set< std::string >::iterator incomingnb_same = m_incomingnbs.begin();
-		while(incomingnb_same!=m_incomingnbs.end())
+		std::unordered_set< uint32_t >::iterator incomingnb_same = m_incomingnbs.begin();
+		/*while(incomingnb_same!=m_incomingnbs.end())
 		{
 			if(lane == (*incomingnb_same) || isSameLane(lane,(*incomingnb_same)))
 			{
 				return incomingnb_same;
 			}
 			incomingnb_same++;
-		}
-		std::pair<std::unordered_set< std::string >::iterator,bool> ret = m_incomingnbs.insert (lane);
+		}*/
+		std::pair<std::unordered_set< uint32_t >::iterator,bool> ret = m_incomingnbs.insert (nexthop);
 		//this->Print(std::cout);
 		return ret.first;
 	}
@@ -72,7 +72,7 @@ EntryNrImpl::AddIncomingNeighbors(std::string lane)
 	}
 }
 
-void EntryNrImpl::setNb(std::unordered_set< std::string > nb)
+void EntryNrImpl::setNb(std::unordered_set< uint32_t > nb)
 {
 	m_incomingnbs = nb;
 }
@@ -120,10 +120,10 @@ void EntryNrImpl::CleanExpiredIncomingNeighbors(uint32_t id)
 }*/
 
 //add by DJ on Jan 4,2016:when it receives corresponding data packet,remove the pit entry
-void EntryNrImpl::RemoveIncomingNeighbors(std::string name)
+void EntryNrImpl::RemoveIncomingNeighbors(uint32_t name)
 {
 	std::cout<<"remove pit incoming neighbors"<<std::endl;
-	std::unordered_set< std::string >::iterator it;
+	std::unordered_set< uint32_t >::iterator it;
     if(name==m_interest_name)
     {
     	for(it=m_incomingnbs.begin();it!=m_incomingnbs.end();++it)
@@ -137,7 +137,7 @@ void EntryNrImpl::RemoveIncomingNeighbors(std::string name)
 void EntryNrImpl::Print(std::ostream& os) const
 {
 	os<<"PIT Entry content: "<<" interest name: "<<m_interest_name<<" ";
-	for(std::unordered_set< std::string >::const_iterator it = m_incomingnbs.begin(); it != m_incomingnbs.end(); ++it)
+	for(std::unordered_set< uint32_t >::const_iterator it = m_incomingnbs.begin(); it != m_incomingnbs.end(); ++it)
 		os<<(*it)<<" ";
 	os<<std::endl;
 }

@@ -95,10 +95,10 @@ void nrConsumer::StopApplication()
 
 void nrConsumer::ScheduleNextPacket()
 {
-	if(GetNode()->GetId() > 35)
+	if(GetNode()->GetId() >35)
 		return;
 
-	double delay =GetNode()->GetId()  - 14  + 65;
+	double delay =GetNode()->GetId()  - 14  + 70;
 
 	Simulator::Schedule (Seconds (delay), & nrConsumer::SendPacket, this);
 }
@@ -107,10 +107,10 @@ void nrConsumer::SendPacket()
 {
 
 	  if (!m_active) return;
-	 //cout<<"consumer send packet"<<endl;
+	// cout<<"consumer send packet"<<endl;
 	  if(isJuction(m_sensor->getLane()))
 	  {
-		  Simulator::Schedule (Seconds (5.0), & nrConsumer::SendPacket, this);
+		  Simulator::Schedule (Seconds (3.0), & nrConsumer::SendPacket, this);
 		  return;
 	  }
 
@@ -132,6 +132,9 @@ void nrConsumer::SendPacket()
 	  std::string lane = m_sensor->getLane();
 	  nrheader.setPreLane(lane);
 	  nrheader.setCurrentLane(lane);
+	  vector<string> lanelist;
+	  lanelist.push_back(m_sensor->getLane());
+	  nrheader.setLaneList(lanelist);
 
 	  Ptr<Packet> newPayload = Create<Packet> (m_virtualPayloadSize);
 	  newPayload->AddHeader(nrheader);
@@ -146,6 +149,7 @@ void nrConsumer::SendPacket()
 	  msgTime[interest->GetNonce()] = Simulator::Now().GetSeconds();
 
 	  nrUtils:: IncreaseInterestedNodeSum();
+	  cout<<"now InterestedNodeSum = "<<nrUtils::InterestedNodeSum<<endl;
 
 }
 
@@ -170,7 +174,8 @@ void nrConsumer::OnData(Ptr<const Data> data)
 		nrUtils::IncreaseInterestedNodeReceivedSum();
 		double delay = Simulator::Now().GetSeconds() - msgTime[signature];
 		nrUtils::GetDelaySum(delay);
-		std::cout<<m_node->GetId()<<"\treceived data "<<name.toUri()<<" from "<<nodeId<<"\tSignature "<<signature<<endl;
+		std::cout<<m_node->GetId()<<"\treceived data "<<name.toUri()<<" from "<<nodeId<<"\tSignature "<<signature<<" delay"<<delay<<endl;
+		 cout<<"now InterestedNodeReceivedSum = "<<nrUtils::InterestedNodeReceivedSum<<"  now InterestedNodeSum = "<<nrUtils::InterestedNodeSum<<endl;
 		interestSent.erase(it);
 	}
 
@@ -186,7 +191,7 @@ void nrConsumer::laneChange(std::string oldLane, std::string newLane)
 
 	m_oldLane = oldLane;
 
-	  cout<<m_node->GetId()<<" lane changed from "<<oldLane<<" to "<<newLane<<endl;
+	  //cout<<m_node->GetId()<<" lane changed from "<<oldLane<<" to "<<newLane<<endl;
 
 	  uint32_t num = GetNode()->GetId() % 3 + 1;
 	  Name prefix("/");
@@ -212,7 +217,7 @@ void nrConsumer::laneChange(std::string oldLane, std::string newLane)
 	  newPayload->AddHeader(nrheader);
 	  interest->SetPayload(newPayload);
 
-	  cout<<"node: "<<GetNode()->GetId()<<"  send MOVE_TO_NEW_LANE packet,name: "<<prefix.toUri()<<" in consumer"<<endl;
+	  //cout<<"node: "<<GetNode()->GetId()<<"  send MOVE_TO_NEW_LANE packet,name: "<<prefix.toUri()<<" in consumer"<<endl;
 
 	  m_transmittedInterests (interest, this, m_face);
 	  m_face->ReceiveInterest (interest);

@@ -83,6 +83,10 @@ uint32_t tableHeader::GetSerializedSize() const
 	uint32_t size=0;
 	size += sizeof(m_sourceId);
 	size += sizeof(m_signature);
+	size += sizeof(uint32_t);
+	size += currentlane.size();
+	//std::cout<<"currentlane.size(): "<<currentlane.size()<<std::endl;
+
 	Ptr<pit::nrndn::EntryNrImpl> tempPitEntry;
 	//m_pitContainer.size():
 	size += sizeof(uint32_t);
@@ -123,20 +127,25 @@ uint32_t tableHeader::GetSerializedSize() const
 			size += sizeof(uint32_t);
 		}
 	}
-	std::cout<<"get deserialize size:"<<size<<std::endl;
-	Print(std::cout);
+	//std::cout<<"get deserialize size:"<<size<<std::endl;
+	//Print(std::cout);
 	return size;
 }
 
 void tableHeader::Serialize(Buffer::Iterator start) const
 {
-	//std::cout<<"serialize:"<<std::endl;
+	//std::cout<<"serialize1:"<<std::endl;
 	Buffer::Iterator& i = start;
 	i.WriteHtonU32(m_sourceId);
 	i.WriteHtonU32(m_signature);
+	i.WriteHtonU32(currentlane.size());
+	//std::cout<<"current lane size:"<<currentlane.size()<<" lane:"<<currentlane<<std::endl;
+	for(uint32_t p= 0; p<currentlane.size(); ++p)
+		i.Write((uint8_t*)&(currentlane[p]),sizeof(char));
 	//std::cout<<"serialize:  source id:"<<m_sourceId<<" m_pitContainer.size():"<<m_pitContainer.size()<<"  m_fibContainer.size():"<<m_fibContainer.size()<<std::endl;
 	Ptr<pit::nrndn::EntryNrImpl> tempPitEntry;
 	i.WriteHtonU32(m_pitContainer.size());
+	//std::cout<<"serialize2"<<std::endl;
 	for(uint32_t it = 0; it<m_pitContainer.size(); ++it)
 	{
 		tempPitEntry =DynamicCast<ndn::pit::nrndn::EntryNrImpl>( m_pitContainer[it]);
@@ -153,7 +162,7 @@ void tableHeader::Serialize(Buffer::Iterator start) const
 					i.Write((uint8_t*)&((*j)[k]),sizeof(char));
 		}
 	}
-
+	//std::cout<<"serialize3:"<<std::endl;
 	Ptr<fib::nrndn::EntryNrImpl> tempFibEntry;
 	i.WriteHtonU32(m_fibContainer.size());
 	for(uint32_t it = 0; it<m_fibContainer.size(); ++it)
@@ -179,13 +188,24 @@ void tableHeader::Serialize(Buffer::Iterator start) const
 
 uint32_t tableHeader::Deserialize(Buffer::Iterator start)
 {
-	//std::cout<<"deserialize:"<<std::endl;
 	Buffer::Iterator i = start;
 	m_sourceId	=	i.ReadNtohU32();
 	m_signature =	i.ReadNtohU32();
-	m_pitContainer.clear();
-
 	uint32_t size  = i.ReadNtohU32();
+	char tc;
+	//std::cout<<"size:"<<size<<std::endl;
+	std::string tempstr = "";
+	for(uint32_t p = 0; p<size; ++p)
+	{
+
+		i.Read((uint8_t*)&(tc),sizeof(char));
+		//std::cout<<"tc: "<<tc<<std::endl;
+		tempstr += tc;
+	}
+	currentlane = tempstr;
+	//std::cout<<"currentlane:"<<currentlane<<std::endl;
+	m_pitContainer.clear();
+	size  = i.ReadNtohU32();
 	//std::cout<<"deserialize:  source id:"<<m_sourceId<<" m_pitContainer.size():"<<size;
 	for (uint32_t j = 0; j < size; j++)
 	{
@@ -197,6 +217,7 @@ uint32_t tableHeader::Deserialize(Buffer::Iterator start)
 			i.Read((uint8_t*)&(tempchar),sizeof(char));
 			tempstring += tempchar;
 		}
+		//std::cout<<"temp string:"<<tempstring<<std::endl;
 		Time interval(300);
 		Ptr<Interest> interest = Create<Interest> (Create<Packet>(1024));
 		Ptr<Name> interestName = Create<Name> (tempstring);
@@ -204,7 +225,6 @@ uint32_t tableHeader::Deserialize(Buffer::Iterator start)
 		Ptr<fib::Entry> fibEntry=ns3::Create<fib::Entry>(Ptr<Fib>(0),Ptr<Name>(0));
 		Ptr<pit::nrndn::EntryNrImpl>  temp = ns3::Create<pit::nrndn::EntryNrImpl>(*m_pit ,interest,fibEntry);
 		temp->setInterestName(tempstring);
-
 		std::unordered_set< std::string > tempnb;
 		uint32_t nbsize =  i.ReadNtohU32();
 		for(uint32_t k = 0; k < nbsize; ++k)
@@ -216,12 +236,12 @@ uint32_t tableHeader::Deserialize(Buffer::Iterator start)
 				i.Read((uint8_t*)&(tempchar),sizeof(char));
 				tempstring += tempchar;
 			}
+			//std::cout<<"tempstring:"<<tempstring<<std::endl;
 			tempnb.insert(tempstring);
 		}
 		temp->setNb(tempnb);
 		m_pitContainer.push_back(DynamicCast<ndn::pit::Entry>(temp));
 	}
-
 	m_fibContainer.clear();
 	size = i.ReadNtohU32();
 	//std::cout<<"  m_fibContainer.size():"<<size<<std::endl;
@@ -240,7 +260,7 @@ uint32_t tableHeader::Deserialize(Buffer::Iterator start)
 		Time interval(300);
 		Ptr<fib::nrndn::EntryNrImpl> temp = ns3::Create<fib::nrndn::EntryNrImpl>(m_fib,name, interval);
 		temp->setDataName(tempstring);
-
+		//std::cout<<"temp string:"<<tempstring<<std::endl;
 		std::unordered_map< std::string,uint32_t > tempnb;
 		uint32_t nbsize =  i.ReadNtohU32();
 		for(uint32_t k = 0; k < nbsize; ++k)
@@ -255,6 +275,7 @@ uint32_t tableHeader::Deserialize(Buffer::Iterator start)
 			}
 			tempttl =  i.ReadNtohU32();
 			tempnb.insert(make_pair(tempstring,tempttl));
+			//std::cout<<"tempstring:"<<tempstring<<" tempttl:"<<tempttl<<std::endl;
 		}
 		temp->setNb(tempnb);
 		m_fibContainer.push_back(DynamicCast<ndn::fib::Entry>(temp));
@@ -262,12 +283,14 @@ uint32_t tableHeader::Deserialize(Buffer::Iterator start)
 
 	uint32_t dist = i.GetDistanceFrom(start);
 	NS_ASSERT(dist == GetSerializedSize());
+
 	return dist;
 }
 
 void tableHeader::Print(std::ostream& os) const
 {
 	//os<<"nrHeader conatin: NodeID="<<m_sourceId<<"\t coordinate=("<<m_x<<","<<m_y<<") priorityList=";
+	os<<"current lane"<<currentlane<<std::endl;
 	os<<"pit:"<<std::endl;
 	std::vector<Ptr<pit::Entry>>::const_iterator it;
 	for(it = m_pitContainer.begin(); it != m_pitContainer.end(); ++it)

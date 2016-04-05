@@ -5,7 +5,7 @@
  *      Author: chen
  */
 
-#include "ndn-nr-fib-impl.h"
+#include "trndn-nr-fib-impl.h"
 #include "ndn-fib-entry-nrimpl.h"
 //#include "NodeSensor.h"
 
@@ -113,13 +113,13 @@ NrFibImpl::RemoveFromAll (Ptr<Face> face){
 }
 
 void
-NrFibImpl::AddFibEntry (const Ptr<const Name> &prefix, std::string lane,uint32_t ttl)
+NrFibImpl::AddFibEntry (const Ptr<const Name> &prefix, uint32_t nexthop,uint32_t ttl)
 {
 	//std::cout<<"add FIB Entry name:"<<prefix->toUri()<<" lane:"<<lane<<" TTL:"<<ttl<<std::endl;
 	if(m_fibContainer.empty())
 	{
 		Ptr<EntryNrImpl> entry = ns3::Create<EntryNrImpl>(this,prefix,m_cleanInterval);
-		entry->AddIncomingNeighbors(lane, ttl);
+		entry->AddIncomingNeighbors(nexthop, ttl);
 		Ptr<Entry> fibEntry = DynamicCast<Entry>(entry);
 		m_fibContainer.push_back(fibEntry);
 		//this->Print(std::cout);
@@ -133,13 +133,13 @@ NrFibImpl::AddFibEntry (const Ptr<const Name> &prefix, std::string lane,uint32_t
 			Ptr<EntryNrImpl> fibEntry = DynamicCast<EntryNrImpl>(*fib);
 			if(fibEntry->getEntryName() == prefix->toUri())
 			{
-				fibEntry->AddIncomingNeighbors(lane,ttl);
+				fibEntry->AddIncomingNeighbors(nexthop,ttl);
 				//this->Print(std::cout);
                 return;
 			}
 		}
 		Ptr<EntryNrImpl> entry = ns3::Create<EntryNrImpl>(this,prefix,m_cleanInterval);
-		entry->AddIncomingNeighbors(lane, ttl);
+		entry->AddIncomingNeighbors(nexthop, ttl);
 		Ptr<Entry> fibEntry = DynamicCast<Entry>(entry);
 		m_fibContainer.push_back(fibEntry);
 
@@ -155,7 +155,7 @@ NrFibImpl::AddFibEntry (const Ptr<const Name> &prefix, std::string lane,uint32_t
 	 std::vector<Ptr<Entry> >::iterator fib_fibCon = fibCon.begin();
 	 for(;fib_fibCon!=fibCon.end();++fib_fibCon){
 		 Ptr<EntryNrImpl> fib_fibConEntry = DynamicCast<EntryNrImpl>(*fib_fibCon);
-		 std::unordered_map< std::string,uint32_t >::const_iterator incomingnb = fib_fibConEntry->getIncomingnbs().begin();
+		 std::unordered_map< uint32_t,uint32_t >::const_iterator incomingnb = fib_fibConEntry->getIncomingnbs().begin();
 		 for(;incomingnb != fib_fibConEntry->getIncomingnbs().end(); ++incomingnb){
 			 AddFibEntry(fib_fibConEntry->GetPrefixPtr(),incomingnb->first,incomingnb->second);
 		 }

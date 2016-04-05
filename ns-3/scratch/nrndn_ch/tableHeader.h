@@ -88,9 +88,21 @@ public:
 		m_fibContainer = fib;
 	}
 
+	void setCurrentLane(std::string lane)
+	{
+		currentlane = lane;
+	}
+
+	std::string getCurrentLane()
+	{
+		//std::cout<<"tableHeader.h:"<<currentlane<<std::endl;
+		//getchar();
+		return currentlane;
+	}
 private:
 	uint32_t		m_sourceId;	//\ (source)	id of source node (source)
 	uint32_t        m_signature;
+	std::string currentlane;
 	 std::vector<Ptr<pit::Entry> >			m_pitContainer;
 	std::vector<Ptr<fib::Entry> >		m_fibContainer;
 	Ptr<ndn::pit::nrndn::NrPitImpl> m_pit;

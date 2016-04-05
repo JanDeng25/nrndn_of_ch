@@ -5,7 +5,7 @@
  *      Author: chen
  */
 
-#include "ndn-nr-pit-impl.h"
+#include "trndn-nr-pit-impl.h"
 #include "ndn-pit-entry-nrimpl.h"
 //#include "NodeSensor.h"
 
@@ -87,13 +87,13 @@ NrPitImpl::NotifyNewAggregate ()
 }
 
 //add by DJ on Jan 4,2016:update pit
-bool NrPitImpl::UpdatePit(std::string lane,Ptr<const Interest> interest)
+bool NrPitImpl::UpdatePit(uint32_t nexthop,Ptr<const Interest> interest)
 {
 	if(m_pitContainer.empty())
 	{
 		Ptr<fib::Entry> fibEntry=ns3::Create<fib::Entry>(Ptr<Fib>(0),Ptr<Name>(0));
 		Ptr<EntryNrImpl> fentry = ns3::Create<EntryNrImpl>(*this,interest,fibEntry);
-		fentry->AddIncomingNeighbors(lane);
+		fentry->AddIncomingNeighbors(nexthop);
 		Ptr<Entry> pitEntry = DynamicCast<Entry>(fentry);
 		m_pitContainer.push_back(pitEntry);
 		//this->Print(std::cout);
@@ -109,10 +109,10 @@ bool NrPitImpl::UpdatePit(std::string lane,Ptr<const Interest> interest)
 			//const name::Component &pitName=(*pit)->GetInterest()->GetName().get(0);
 			if(pitEntry->getEntryName() == interest->GetName().toUri())
 			{
-				std::unordered_set< std::string >::const_iterator it = pitEntry->getIncomingnbs().find(lane);
+				std::unordered_set< uint32_t >::const_iterator it = pitEntry->getIncomingnbs().find(nexthop);
 				if(it==pitEntry->getIncomingnbs().end())
 				{
-					pitEntry->AddIncomingNeighbors(lane);
+					pitEntry->AddIncomingNeighbors(nexthop);
 				}
 				//this->Print(std::cout);
 				return true;
@@ -120,7 +120,7 @@ bool NrPitImpl::UpdatePit(std::string lane,Ptr<const Interest> interest)
 		}
 	    Ptr<fib::Entry> fibEntry=ns3::Create<fib::Entry>(Ptr<Fib>(0),Ptr<Name>(0));
 	    Ptr<EntryNrImpl> fentry = ns3::Create<EntryNrImpl>(*this,interest,fibEntry);
-	    fentry->AddIncomingNeighbors(lane);
+	    fentry->AddIncomingNeighbors(nexthop);
 		Ptr<Entry> pitEntry = DynamicCast<Entry>(fentry);
 		m_pitContainer.push_back(pitEntry);
 		//this->Print(std::cout);
@@ -138,7 +138,7 @@ bool NrPitImpl::UpdatePit(std::string lane,Ptr<const Interest> interest)
 	 for(;pit_pitCon!=pitCon.end();++pit_pitCon)
 	 {
 		 Ptr<EntryNrImpl> pit_pitConEntry = DynamicCast<EntryNrImpl>(*pit_pitCon);
-		 std::unordered_set< std::string >::const_iterator incomingnb = pit_pitConEntry->getIncomingnbs().begin();
+		 std::unordered_set< uint32_t >::const_iterator incomingnb = pit_pitConEntry->getIncomingnbs().begin();
 		 for(;incomingnb != pit_pitConEntry->getIncomingnbs().end(); ++incomingnb){
 			 UpdatePit(*incomingnb, pit_pitConEntry->GetInterest());
 		 }
@@ -263,7 +263,7 @@ NrPitImpl::Print (std::ostream& os) const
 	{
 		Ptr<ndn::pit::nrndn::EntryNrImpl>  temp = DynamicCast<ndn::pit::nrndn::EntryNrImpl>(*it);
 		os<<"name:   "<< temp->getEntryName();
-		std::unordered_set< std::string >::const_iterator i = temp->getIncomingnbs().begin();
+		std::unordered_set< uint32_t >::const_iterator i = temp->getIncomingnbs().begin();
 		for(; i !=  temp->getIncomingnbs().end(); ++i)
 			os<<" lane:"<<(*i);
 		os<<std::endl;

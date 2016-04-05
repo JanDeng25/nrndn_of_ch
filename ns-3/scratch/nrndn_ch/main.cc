@@ -116,7 +116,7 @@ private:
 
   //hitRate: among all the interested nodes, how many are received
   double hitRate;
-  uint32_t ForwardTimes;
+  uint32_t ResourceForwardTimes;
   double averageInterestForwardTimes;
   double averageDataForwardTimes;
   double averageDelay;
@@ -124,6 +124,7 @@ private:
   double averageDetectRate;
   double averageConfirmRate;
   double averageForwardSum;
+  uint32_t InterestedNodeReceivedSum;
 
   bool noFwStop;
 
@@ -188,7 +189,7 @@ nrndnExample::nrndnExample () :
   method(0),
   interestFrequency(0.5),//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1
   hitRate(0),
-  ForwardTimes(0),
+  ResourceForwardTimes(0),
   averageInterestForwardTimes(0),
   averageDataForwardTimes(0),
   averageDelay(0),
@@ -196,6 +197,7 @@ nrndnExample::nrndnExample () :
   averageDetectRate(0),
   averageConfirmRate(0),
   averageForwardSum(0),
+  InterestedNodeReceivedSum(0),
   noFwStop(false),
   TTLMax(3),
   virtualPayloadSize(1024)
@@ -236,7 +238,7 @@ nrndnExample::Configure (int argc, char **argv)
   cmd.AddValue ("transRange","transmission range",transRange);
   cmd.AddValue("HelloLogEnable","the switch which can turn on the log on Functions about hello messages",HelloLogEnable);
   cmd.AddValue("accidentNum","the number of accident. It will randomly put into the whole simulation(default 3)",accidentNum);
-  cmd.AddValue("method","Forward method,0=Nrndn, 1=Dist, 2=CDS",method);
+  cmd.AddValue("method","Forward method,0=Nrndn, 1=DJ, 2=Trad",method);
   cmd.AddValue("noFwStop","When the PIT covers the nodes behind, no broadcast stop message",noFwStop);
   cmd.AddValue("TTLMax","This value indicate that when a data is received by disinterested node, the max hop count it should be forwarded",TTLMax);
   cmd.AddValue("interestFreq","Interest Packet Sending Frequency(Hz)",interestFrequency);
@@ -255,10 +257,10 @@ void nrndnExample::Run()
 		RunNrndnSim();
 		break;
 	case 1:
-		RunTraNdnSim();
+		RunDjNdnSim();
 		break;
 	case 2:
-		RunDjNdnSim();
+		RunTraNdnSim();
 		break;
 	default:
 		cout<<"Undefine method"<<endl;
@@ -329,7 +331,7 @@ void nrndnExample::RunTraNdnSim()
 
 void nrndnExample::RunDjNdnSim()
 {
-	name = "CDS-Simulation";
+	name = "DJ-Simulation";
 	LoadTraffic();
 	CreateNodes();
 	CreateDevices();
@@ -359,13 +361,14 @@ nrndnExample::Report ()
 			//<<accuracyRate<<'\t'
 			<<"hit rate:"<<hitRate<<'\t'
 			<<" average delay:"<<averageDelay<<'\t'
-			<<" forward times:"<<ForwardTimes<<'\t'
+			<<" Resourceforward times:"<< ResourceForwardTimes<<'\t'
 			<<" average interest forwards times:"<<averageInterestForwardTimes<<'\t'
 			<<" average data froward times:"<<averageDataForwardTimes<<'\t'
 			<<" table Sum:"<<tableSum<<'\t'
 			<<" average Detect Rate:"<<averageDetectRate<<'\t'
 			<<" average Confirm Rate:"<<averageConfirmRate<<'\t'
 			<<" average Forward Sum:"<<averageForwardSum<<'\t'
+			<<" InterestedNodeReceivedSum"<<InterestedNodeReceivedSum<<'\t'
 			<<endl;
 
 }
@@ -521,10 +524,10 @@ void nrndnExample::InstallTraNdnStack()//////////////////////////////////////gai
   	uint32_t pitCleanInterval = 1.0 / interestFrequency * 3.0;
   	pitCleanIntervalStr<<pitCleanInterval;
   	cout<<"pitInterval="<<pitCleanIntervalStr.str()<<endl;
-  	ndnHelper.SetForwardingStrategy ("ns3::ndn::fw::nrndn::NavigationRouteHeuristic","HelloLogEnable",str,"NoFwStop",noFwStopStr);
-  	ndnHelper.SetPit("ns3::ndn::pit::nrndn::NrPitImpl");
-  	ndnHelper.SetFib("ns3::ndn::fib::nrndn::NrFibImpl");
-  	ndnHelper.SetContentStore("ns3::ndn::cs::nrndn::NrCsImpl");
+  	ndnHelper.SetForwardingStrategy ("ns3::ndn::fw::trandn::NavigationRouteHeuristic","HelloLogEnable",str,"NoFwStop",noFwStopStr);
+  	ndnHelper.SetPit("ns3::ndn::pit::trandn::traPitImpl", "CleanInterval",pitCleanIntervalStr.str());
+  	ndnHelper.SetFib("ns3::ndn::fib::trandn::traibImpl","CleanInterval",pitCleanIntervalStr.str());
+  	ndnHelper.SetContentStore("ns3::ndn::cs::trandn::traCsImpl");
   	ndnHelper.SetDefaultRoutes (true);
   	ndnHelper.Install (nodes);
 }
@@ -546,10 +549,10 @@ void nrndnExample::InstallDjNdnStack()//////////////////////////////////////gai!
 		uint32_t pitCleanInterval = 1.0 / interestFrequency * 3.0;
 		pitCleanIntervalStr<<pitCleanInterval;
 		cout<<"pitInterval="<<pitCleanIntervalStr.str()<<endl;
-		ndnHelper.SetForwardingStrategy ("ns3::ndn::fw::nrndn::NavigationRouteHeuristic","HelloLogEnable",str,"NoFwStop",noFwStopStr);
-		ndnHelper.SetPit("ns3::ndn::pit::nrndn::NrPitImpl");
-		ndnHelper.SetFib("ns3::ndn::fib::nrndn::NrFibImpl");
-		ndnHelper.SetContentStore("ns3::ndn::cs::nrndn::NrCsImpl");
+		ndnHelper.SetForwardingStrategy ("ns3::ndn::fw::djndn::NavigationRouteHeuristic","HelloLogEnable",str,"NoFwStop",noFwStopStr);
+		ndnHelper.SetPit("ns3::ndn::pit::djndn::djPitImpl", "CleanInterval",pitCleanIntervalStr.str());
+		ndnHelper.SetFib("ns3::ndn::fib::djndn::djFibImpl", "CleanInterval",pitCleanIntervalStr.str());
+		ndnHelper.SetContentStore("ns3::ndn::cs::djndn::djCsImpl");
 		ndnHelper.SetDefaultRoutes (true);
 		ndnHelper.Install (nodes);
 }
@@ -596,7 +599,7 @@ nrndnExample::InstallNrndnApplications ()
 	ndn::AppHelper producerHelper ("ns3::ndn::nrndn::nrProducer");
 	//producerHelper.SetPrefix ("/");
 	producerHelper.SetAttribute ("PayloadSize", UintegerValue (virtualPayloadSize));
-	for(uint32_t i=0; i<15; ++i)
+	for(uint32_t i=0; i<=14; ++i)
 		producerHelper.Install(nodes.Get (i));
 	/////nrUtils::appIndex["ns3::ndn::nrndn::nrProducer"]=1;
 
@@ -612,54 +615,51 @@ nrndnExample::InstallNrndnApplications ()
 
 void nrndnExample::InstallTraNdnApplications()////////////////////////////////gai!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 {
-	/*
-	NS_LOG_INFO ("Installing TRA NDN Applications");
-	ndn::AppHelper consumerHelper ("ns3::ndn::nrndn::traConsumer");
-	consumerHelper.SetAttribute ("PayloadSize", UintegerValue (virtualPayloadSize));
-	consumerHelper.Install(nodes);
-	nrUtils::appIndex["ns3::ndn::nrndn::traConsumer"]=0;
 
-	ndn::AppHelper producerHelper ("ns3::ndn::nrndn::traProducer");
-	producerHelper.Install(nodes);
-	nrUtils::appIndex["ns3::ndn::nrndn::traProducer"]=1;
+	NS_LOG_INFO ("Installing TRA NDN Applications");
+	ndn::AppHelper consumerHelper ("ns3::ndn::trandn::traConsumer");
+	consumerHelper.SetAttribute ("PayloadSize", UintegerValue (virtualPayloadSize));
+	for (NodeContainer::Iterator i = nodes.Begin (); i != nodes.End (); ++i)
+			if((*i)->GetId() > 14)
+				consumerHelper.Install(*i);
+
+	ndn::AppHelper producerHelper ("ns3::ndn::trandn::traProducer");
+	producerHelper.SetAttribute ("PayloadSize", UintegerValue (virtualPayloadSize));
+		for(uint32_t i=0; i<=14; ++i)
+			producerHelper.Install(nodes.Get (i));
 
 	//Setup start and end time;
 	for (NodeContainer::Iterator i = nodes.Begin (); i != nodes.End (); ++i)
 	{
 		double start=mobility->GetStartTime((*i)->GetId());
 		double stop =mobility->GetStopTime ((*i)->GetId());
-		(*i)->GetApplication(nrUtils::appIndex["ns3::ndn::nrndn::traConsumer"])->SetAttribute("StartTime",TimeValue (Seconds (start)));
-		(*i)->GetApplication(nrUtils::appIndex["ns3::ndn::nrndn::traConsumer"])->SetAttribute("StopTime", TimeValue (Seconds (stop )));
-
-		(*i)->GetApplication(nrUtils::appIndex["ns3::ndn::nrndn::traProducer"])->SetAttribute("StartTime",TimeValue (Seconds (start)));
-		(*i)->GetApplication(nrUtils::appIndex["ns3::ndn::nrndn::traProducer"])->SetAttribute("StopTime", TimeValue (Seconds (stop )));
-	}*/
+		(*i)->GetApplication(0)->SetAttribute("StartTime",TimeValue (Seconds (start)));
+		(*i)->GetApplication(0)->SetAttribute("StopTime", TimeValue (Seconds (stop )));
+	}
 }
 
 void nrndnExample::InstallDjNdnApplications()/////////////////////////////////////////////gai/11111111111111111111111111111111111
 {
-	/*
 	NS_LOG_INFO ("Installing DJ NDN Applications");
-	ndn::AppHelper consumerHelper ("ns3::ndn::nrndn::nrConsumer");
-	consumerHelper.SetAttribute ("PayloadSize", UintegerValue (virtualPayloadSize));
-	consumerHelper.Install(nodes);
-	nrUtils::appIndex["ns3::ndn::nrndn::nrConsumer"]=0;
+		ndn::AppHelper consumerHelper ("ns3::ndn::djndn::djConsumer");
+		consumerHelper.SetAttribute ("PayloadSize", UintegerValue (virtualPayloadSize));
+		for (NodeContainer::Iterator i = nodes.Begin (); i != nodes.End (); ++i)
+				if((*i)->GetId() > 14)
+					consumerHelper.Install(*i);
 
-	ndn::AppHelper producerHelper ("ns3::ndn::nrndn::nrProducer");
-	producerHelper.Install(nodes);
-	nrUtils::appIndex["ns3::ndn::nrndn::nrProducer"]=1;
+		ndn::AppHelper producerHelper ("ns3::ndn::djndn::djProducer");
+		producerHelper.SetAttribute ("PayloadSize", UintegerValue (virtualPayloadSize));
+			for(uint32_t i=0; i<=14; ++i)
+				producerHelper.Install(nodes.Get (i));
 
-	//Setup start and end time;
-	for (NodeContainer::Iterator i = nodes.Begin (); i != nodes.End (); ++i)
-	{
-		double start=mobility->GetStartTime((*i)->GetId());
-		double stop =mobility->GetStopTime ((*i)->GetId());
-		(*i)->GetApplication(nrUtils::appIndex["ns3::ndn::nrndn::nrConsumer"])->SetAttribute("StartTime",TimeValue (Seconds (start)));
-		(*i)->GetApplication(nrUtils::appIndex["ns3::ndn::nrndn::nrConsumer"])->SetAttribute("StopTime", TimeValue (Seconds (stop )));
-
-		(*i)->GetApplication(nrUtils::appIndex["ns3::ndn::nrndn::nrProducer"])->SetAttribute("StartTime",TimeValue (Seconds (start)));
-		(*i)->GetApplication(nrUtils::appIndex["ns3::ndn::nrndn::nrProducer"])->SetAttribute("StopTime", TimeValue (Seconds (stop )));
-	}*/
+		//Setup start and end time;
+		for (NodeContainer::Iterator i = nodes.Begin (); i != nodes.End (); ++i)
+		{
+			double start=mobility->GetStartTime((*i)->GetId());
+			double stop =mobility->GetStopTime ((*i)->GetId());
+			(*i)->GetApplication(0)->SetAttribute("StartTime",TimeValue (Seconds (start)));
+			(*i)->GetApplication(0)->SetAttribute("StopTime", TimeValue (Seconds (stop )));
+		}
 }
 
 void nrndnExample::Look_at_clock()
@@ -733,12 +733,12 @@ nrndnExample::getStatistic()
 	averageDelay = nrUtils::GetAverageDelay();
 
 	//5. get average data forward times
-	ForwardTimes = nrUtils::GetForwardSum();
+	ResourceForwardTimes = nrUtils::GetResourceForwardSum();
 
 	//6. get average interest forward times
-	//averageInterestForwardTimes = nrUtils::GetAverageInterestForwardTimes();
+	averageInterestForwardTimes = nrUtils::GetAverageInterestForwardTimes();
 
-	//averageDataForwardTimes = nrUtils::GetAverageInterestForwardTimes();
+	averageDataForwardTimes = nrUtils::GetAverageDataForwardTimes();
 
 	tableSum = nrUtils::GetTableSum();
 
@@ -747,6 +747,8 @@ nrndnExample::getStatistic()
 	averageConfirmRate = nrUtils::GetAverageConfirmRate();
 
 	averageForwardSum = nrUtils::GetAverageForwardSum();
+
+	InterestedNodeReceivedSum = nrUtils::GetInterestedNodeReceivedSum();
 
 }
 
