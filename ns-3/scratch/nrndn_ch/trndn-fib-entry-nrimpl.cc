@@ -12,7 +12,7 @@
 #include "ns3/ndn-forwarding-strategy.h"
 
 #include "ns3/log.h"
-NS_LOG_COMPONENT_DEFINE ("ndn.fib.nrndn.EntryNrImpl");
+NS_LOG_COMPONENT_DEFINE ("ndn.fib.nrndn.TrEntryNrImpl");
 
 namespace ns3 {
 namespace ndn {
@@ -21,25 +21,25 @@ class Fib;
 
 namespace fib {
 namespace nrndn{
-EntryNrImpl::EntryNrImpl(Ptr<Fib> fib, const Ptr<const NameComponents> &prefix,Time cleanInterval)
+TrEntryNrImpl::TrEntryNrImpl(Ptr<Fib> fib, const Ptr<const NameComponents> &prefix,Time cleanInterval)
 	:Entry(fib,prefix),
 	 m_infaceTimeout(cleanInterval)
 {
-	/*NS_ASSERT_MSG(prefix.size()<2,"In EntryNrImpl, "
+	/*NS_ASSERT_MSG(prefix.size()<2,"In TrEntryNrImpl, "
 			"each name of data should be only one component, "
 			"for example: /routeSegment, do not use more than one slash, "
 			"such as/route1/route2/...");*/
 	m_data_name=prefix->toUri();
 }
 
-EntryNrImpl::~EntryNrImpl ()
+TrEntryNrImpl::~TrEntryNrImpl ()
 {
   
 }
 
 
 std::unordered_map<uint32_t,uint32_t  >::iterator
-EntryNrImpl::AddIncomingNeighbors(uint32_t nexthop,uint32_t ttl)
+TrEntryNrImpl::AddIncomingNeighbors(uint32_t nexthop,uint32_t ttl)
 {
 	//std::cout<<"add FIB incomingNeighbors  name:  "<<m_data_name<<"  lane: "<<lane<<"  TTL: "<<ttl<<std::endl;
 	if(m_incomingnbs.empty())
@@ -88,7 +88,7 @@ EntryNrImpl::AddIncomingNeighbors(uint32_t nexthop,uint32_t ttl)
 	}
 }
 
-void EntryNrImpl::Print(std::ostream& os) const
+void TrEntryNrImpl::Print(std::ostream& os) const
 {
 	os<<"FIB Entry content: "
 			<<" data name="<<m_data_name<<"   ";
@@ -101,16 +101,16 @@ void EntryNrImpl::Print(std::ostream& os) const
 		os<<(*it).first<<"   "<<(*it).second<<"    ";
 	os<<std::endl;
 }
-void EntryNrImpl::setDataName(std::string name)
+void TrEntryNrImpl::setDataName(std::string name)
 {
 	m_data_name = name;
 }
 
-void EntryNrImpl::setNb(std::unordered_map< uint32_t,uint32_t >  nb)
+void TrEntryNrImpl::setNb(std::unordered_map< uint32_t,uint32_t >  nb)
 {
 	m_incomingnbs = nb;
 }
-bool EntryNrImpl::isSameLane(std::string lane1, std::string lane2)
+bool TrEntryNrImpl::isSameLane(std::string lane1, std::string lane2)
 {
 	if(lane1.length() != 8 || lane2.length() != 8)
 			return false;
@@ -121,7 +121,7 @@ bool EntryNrImpl::isSameLane(std::string lane1, std::string lane2)
 		return false;
 }
 
-/*void EntryNrImpl::RemoveEntry()
+/*void TrEntryNrImpl::RemoveEntry()
 {
 
 }*/

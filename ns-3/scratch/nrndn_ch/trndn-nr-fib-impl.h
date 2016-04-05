@@ -38,7 +38,7 @@ namespace nrndn
  * @brief Class implementing Pending Interests Table,
  * 		  with navigation route customize
  */
-class NrFibImpl	: public Fib
+class TrNrFibImpl	: public Fib
 {
 public:
   /**
@@ -51,12 +51,12 @@ public:
   /**
    * \brief FIB constructor
    */
-  NrFibImpl();
+  TrNrFibImpl();
 
   /**
    * \brief Destructor
    */
-  virtual ~NrFibImpl();
+  virtual ~TrNrFibImpl();
 
   // inherited from Fib
   /**
@@ -100,7 +100,7 @@ public:
   virtual Ptr<Entry>
   Create (Ptr<const Data> header);
 
-  //replace NrFibImpl::Create
+  //replace TrNrFibImpl::Create
   //bool
   //InitializeNrFibEntry ();
 

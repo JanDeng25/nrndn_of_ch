@@ -37,7 +37,7 @@ namespace nrndn
  * @brief Class implementing Pending Interests Table,
  * 		  with navigation route customize
  */
-class NrPitImpl	: public Pit				
+class TrNrPitImpl	: public Pit
 {
 public:
   /**
@@ -50,12 +50,12 @@ public:
   /**
    * \brief PIT constructor
    */
-  NrPitImpl();
+  TrNrPitImpl();
 
   /**
    * \brief Destructor
    */
-  virtual ~NrPitImpl();
+  virtual ~TrNrPitImpl();
 
   // inherited from Pit
 
@@ -75,7 +75,7 @@ public:
   virtual Ptr<Entry>
   Create (Ptr<const Interest> header);
 
-  //replace NrPitImpl::Create
+  //replace TrNrPitImpl::Create
   bool
   InitializeNrPitEntry ();
 

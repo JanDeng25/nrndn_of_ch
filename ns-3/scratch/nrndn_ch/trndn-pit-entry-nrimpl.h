@@ -31,13 +31,13 @@ namespace nrndn{
 	 *           It is completely unrelated to the class PIT::Entry
 	 */
 
-class EntryNrImpl : public Entry
+class TrEntryNrImpl : public Entry
 {
 public:
 	typedef Entry super;
 
-	EntryNrImpl(Pit &container, Ptr<const Interest> header,Ptr<fib::Entry> fibEntry);
-	virtual ~EntryNrImpl();
+	TrEntryNrImpl(Pit &container, Ptr<const Interest> header,Ptr<fib::Entry> fibEntry);
+	virtual ~TrEntryNrImpl();
 	
 	/**
 	 * @brief Remove all the timeout event in the timeout event list

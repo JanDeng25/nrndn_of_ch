@@ -31,13 +31,13 @@ namespace nrndn{
 	 *           It is completely unrelated to the class FIB::Entry
 	 */
 
-class EntryNrImpl : public Entry
+class TrEntryNrImpl : public Entry
 {
 public:
 	typedef Entry super;
 
-	EntryNrImpl(Ptr<Fib> fib, const Ptr<const NameComponents> &prefix, Time cleanInterval);
-	virtual ~EntryNrImpl();
+	TrEntryNrImpl(Ptr<Fib> fib, const Ptr<const NameComponents> &prefix, Time cleanInterval);
+	virtual ~TrEntryNrImpl();
 	
 	/**
 	 * @brief Remove all the timeout event in the timeout event list

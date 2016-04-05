@@ -12,7 +12,7 @@
 
 #include "ns3/log.h"
 
-NS_LOG_COMPONENT_DEFINE ("ndn.fib.NrFibImpl");
+NS_LOG_COMPONENT_DEFINE ("ndn.fib.TrNrFibImpl");
 
 #include "ns3/string.h"
 #include "ns3/uinteger.h"
@@ -29,36 +29,36 @@ namespace nrndn
 {
 
 
-NS_OBJECT_ENSURE_REGISTERED (NrFibImpl);
+NS_OBJECT_ENSURE_REGISTERED (TrNrFibImpl);
 
 TypeId
-NrFibImpl::GetTypeId ()
+TrNrFibImpl::GetTypeId ()
 {
-  static TypeId tid = TypeId ("ns3::ndn::fib::nrndn::NrFibImpl")
+  static TypeId tid = TypeId ("ns3::ndn::fib::nrndn::TrNrFibImpl")
     .SetGroupName ("Ndn")
     .SetParent<Fib> ()
-    .AddConstructor< NrFibImpl > ()
+    .AddConstructor< TrNrFibImpl > ()
    /* .AddAttribute ("CleanInterval", "cleaning interval of the timeout incoming faces of FIB entry",
    			                    TimeValue (Seconds (10)),
-   			                    MakeTimeAccessor (&NrFibImpl::m_cleanInterval),
+   			                    MakeTimeAccessor (&TrNrFibImpl::m_cleanInterval),
    			                    MakeTimeChecker ())*/
     ;
 
   return tid;
 }
 
-NrFibImpl::NrFibImpl ():
+TrNrFibImpl::TrNrFibImpl ():
 		m_cleanInterval(Seconds(300.0))
 {
 }
 
-NrFibImpl::~NrFibImpl ()
+TrNrFibImpl::~TrNrFibImpl ()
 {
 }
 
 
 void
-NrFibImpl::NotifyNewAggregate ()
+TrNrFibImpl::NotifyNewAggregate ()
 {
 	////delete by DJ on Dec 27,2015:no fib itself
 	/*if (m_fib == 0)
@@ -77,7 +77,7 @@ NrFibImpl::NotifyNewAggregate ()
 		/*if (m_sensor != NULL)
 		{
 			m_sensor->TraceConnectWithoutContext("LaneChange",
-					MakeCallback(&NrFibImpl::laneChange, this));
+					MakeCallback(&TrNrFibImpl::laneChange, this));
 
 			//NrFibEntry needs m_sensor. Initialize immediately after m_sensor is aggregated
 			InitializeNrFibEntry();
@@ -88,32 +88,32 @@ NrFibImpl::NotifyNewAggregate ()
 }
 
 Ptr<fib::Entry>
-NrFibImpl::LongestPrefixMatch (const Interest &interest){
+TrNrFibImpl::LongestPrefixMatch (const Interest &interest){
 	return 0;
 }
 
 Ptr<fib::Entry>
-NrFibImpl::Add (const Name &prefix, Ptr<Face> face, int32_t metric)
+TrNrFibImpl::Add (const Name &prefix, Ptr<Face> face, int32_t metric)
 {
 	return 0;
 }
 
 Ptr<fib::Entry>
-NrFibImpl::Add (const Ptr<const Name> &prefix, Ptr<Face> face, int32_t metric){
+TrNrFibImpl::Add (const Ptr<const Name> &prefix, Ptr<Face> face, int32_t metric){
 	return 0;
 }
 void
-NrFibImpl::InvalidateAll(){
+TrNrFibImpl::InvalidateAll(){
 
 }
 
 void
-NrFibImpl::RemoveFromAll (Ptr<Face> face){
+TrNrFibImpl::RemoveFromAll (Ptr<Face> face){
 
 }
 
 void
-NrFibImpl::AddFibEntry (const Ptr<const Name> &prefix, uint32_t nexthop,uint32_t ttl)
+TrNrFibImpl::AddFibEntry (const Ptr<const Name> &prefix, uint32_t nexthop,uint32_t ttl)
 {
 	//std::cout<<"add FIB Entry name:"<<prefix->toUri()<<" lane:"<<lane<<" TTL:"<<ttl<<std::endl;
 	if(m_fibContainer.empty())
@@ -149,7 +149,7 @@ NrFibImpl::AddFibEntry (const Ptr<const Name> &prefix, uint32_t nexthop,uint32_t
 
 //Mar 17,2016: merge two fib table
  void
- NrFibImpl::mergeFib(std::vector<Ptr<Entry> >  fibCon){
+ TrNrFibImpl::mergeFib(std::vector<Ptr<Entry> >  fibCon){
 	 if(fibCon.size()==0)
 		 return;
 	 std::vector<Ptr<Entry> >::iterator fib_fibCon = fibCon.begin();
@@ -164,7 +164,7 @@ NrFibImpl::AddFibEntry (const Ptr<const Name> &prefix, uint32_t nexthop,uint32_t
  }
 
 void
-NrFibImpl::Print (std::ostream& os) const
+TrNrFibImpl::Print (std::ostream& os) const
 {
 	os<<"my lane:"<<m_sensor->getLane()<<std::endl;
 	os<<"FIB content "<<std::endl;;
@@ -181,9 +181,9 @@ NrFibImpl::Print (std::ostream& os) const
 
 //modify by DJ Dec 25,2015. Fib update according to source packet.
 Ptr<Entry>
-NrFibImpl::Find (const Name &prefix)
+TrNrFibImpl::Find (const Name &prefix)
 {
-	//NS_ASSERT_MSG(false,"In NrFibImpl,NrFibImpl::Find (const Name &prefix) should not be invoked");
+	//NS_ASSERT_MSG(false,"In TrNrFibImpl,TrNrFibImpl::Find (const Name &prefix) should not be invoked");
 	 NS_LOG_INFO ("Finding prefix"<<prefix.toUri());
 	 std::vector<Ptr<Entry> >::iterator it;
 	 //NS_ASSERT_MSG(m_fibContainer.size()!=0,"Empty fib container. No initialization?");
@@ -198,12 +198,12 @@ NrFibImpl::Find (const Name &prefix)
 }
 
 void
-NrFibImpl::Remove (const Ptr<const Name> &prefix){
+TrNrFibImpl::Remove (const Ptr<const Name> &prefix){
 
 }
 
 //modify by DJ Jan 5,2016. Fib update according to source packet.
-/*bool NrFibImpl::UpdateFib(std::string lane,Ptr<const Data> data)
+/*bool TrNrFibImpl::UpdateFib(std::string lane,Ptr<const Data> data)
 {
 	//std::ostringstream os;
 	std::vector<Ptr<Entry> >::iterator fib=m_fibContainer.begin();
@@ -239,7 +239,7 @@ NrFibImpl::Remove (const Ptr<const Name> &prefix){
 }*/
 
 void
-NrFibImpl::DoDispose ()
+TrNrFibImpl::DoDispose ()
 {
 	m_forwardingStrategy = 0;
 	//m_fib = 0;
@@ -250,20 +250,20 @@ NrFibImpl::DoDispose ()
 
 //modify by DJ Dec 25,2015. Fib update according to source packet.
 Ptr<Entry>
-NrFibImpl::Create (Ptr<const Data> header)
+TrNrFibImpl::Create (Ptr<const Data> header)
  {
 
 	NS_LOG_DEBUG (header->GetName ());
-	NS_ASSERT_MSG(false,"In NrFibImpl,NrFibImpl::Create (Ptr<const Data> header) "
+	NS_ASSERT_MSG(false,"In TrNrFibImpl,TrNrFibImpl::Create (Ptr<const Data> header) "
 			"should not be invoked, use "
-			"NrFibImpl::CreateNrFibEntry instead");
+			"TrNrFibImpl::CreateNrFibEntry instead");
 	return 0;
 }
 
 //how to initialize fibEntry?
 //need to modify by DJ Dec 25,2015. Fib update according to source packet.
 /*bool
-NrFibImpl::InitializeNrFibEntry()
+TrNrFibImpl::InitializeNrFibEntry()
 {
 	NS_LOG_FUNCTION (this);
 	const std::vector<std::string>& route =	m_sensor->getNavigationRoute();
@@ -291,20 +291,20 @@ NrFibImpl::InitializeNrFibEntry()
 
 
 uint32_t
-NrFibImpl::GetSize () const
+TrNrFibImpl::GetSize () const
 {
 	return m_fibContainer.size ();
 }
   
 Ptr<const fib::Entry>
-NrFibImpl::Begin () const{
+TrNrFibImpl::Begin () const{
 	return 0;
 }
 
 Ptr<Entry>
-NrFibImpl::Begin ()
+TrNrFibImpl::Begin ()
 {
-	//NS_ASSERT_MSG(false,"In NrFibImpl,NrFibImpl::Begin () should not be invoked");
+	//NS_ASSERT_MSG(false,"In TrNrFibImpl,TrNrFibImpl::Begin () should not be invoked");
 
 	if(m_fibContainer.begin() == m_fibContainer.end())
 		return End();
@@ -313,28 +313,28 @@ NrFibImpl::Begin ()
 }
 
 Ptr<const fib::Entry>
-NrFibImpl::End () const{
+TrNrFibImpl::End () const{
 	return 0;
 }
 
 
 Ptr<Entry>
-NrFibImpl::End ()
+TrNrFibImpl::End ()
 {
-	//NS_ASSERT_MSG(false,"In NrFibImpl,NrFibImpl::End () should not be invoked");
+	//NS_ASSERT_MSG(false,"In TrNrFibImpl,TrNrFibImpl::End () should not be invoked");
 	return 0;
 }
   
 Ptr<const fib::Entry>
-NrFibImpl::Next (Ptr<const fib::Entry>) const{
+TrNrFibImpl::Next (Ptr<const fib::Entry>) const{
 
 	return 0;
 }
 
 Ptr<Entry>
-NrFibImpl::Next (Ptr<Entry> from)
+TrNrFibImpl::Next (Ptr<Entry> from)
 {
-	//NS_ASSERT_MSG(false,"In NrFibImpl,NrFibImpl::Next () should not be invoked");
+	//NS_ASSERT_MSG(false,"In TrNrFibImpl,TrNrFibImpl::Next () should not be invoked");
 	if (from == 0) return 0;
 
 	std::vector<Ptr<Entry> >::iterator it;
@@ -352,7 +352,7 @@ NrFibImpl::Next (Ptr<Entry> from)
 }
 
 //小锟添加，2015-8-23
-std::string NrFibImpl::uriConvertToString(std::string str)
+std::string TrNrFibImpl::uriConvertToString(std::string str)
 {
 	//因为获取兴趣时使用toUri，避免出现类似[]的符号，进行编码转换
 	std::string ret="";
@@ -456,7 +456,7 @@ std::string NrFibImpl::uriConvertToString(std::string str)
 
 }*/
 
-void NrFibImpl::DoInitialize(void)
+void TrNrFibImpl::DoInitialize(void)
 {
 	Fib::DoInitialize();
 }

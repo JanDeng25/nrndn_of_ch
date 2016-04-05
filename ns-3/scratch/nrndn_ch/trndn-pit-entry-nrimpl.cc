@@ -12,7 +12,7 @@
 #include "ns3/ndn-forwarding-strategy.h"
 
 #include "ns3/log.h"
-NS_LOG_COMPONENT_DEFINE ("ndn.pit.nrndn.EntryNrImpl");
+NS_LOG_COMPONENT_DEFINE ("ndn.pit.nrndn.TrEntryNrImpl");
 
 namespace ns3 {
 namespace ndn {
@@ -21,24 +21,24 @@ class Pit;
 
 namespace pit {
 namespace nrndn{
-EntryNrImpl::EntryNrImpl(Pit &container, Ptr<const Interest> header,Ptr<fib::Entry> fibEntry)
+TrEntryNrImpl::TrEntryNrImpl(Pit &container, Ptr<const Interest> header,Ptr<fib::Entry> fibEntry)
 	:Entry(container,header,fibEntry)
 	 //m_infaceTimeout(cleanInterval)
 {
-	/*NS_ASSERT_MSG(header->GetName().size()<2,"In EntryNrImpl, "
+	/*NS_ASSERT_MSG(header->GetName().size()<2,"In TrEntryNrImpl, "
 			"each name of interest should be only one component, "
 			"for example: /routeSegment, do not use more than one slash, "
 			"such as/route1/route2/...");*/
 	m_interest_name=header->GetName().toUri();
 }
 
-EntryNrImpl::~EntryNrImpl ()
+TrEntryNrImpl::~TrEntryNrImpl ()
 {
   
 }
 
 std::unordered_set< uint32_t  >::iterator
-EntryNrImpl::AddIncomingNeighbors(uint32_t nexthop)
+TrEntryNrImpl::AddIncomingNeighbors(uint32_t nexthop)
 {
 	//std::cout<<"add PIT incomingNeighbors"<<std::endl;
 	if(m_incomingnbs.empty())
@@ -72,17 +72,17 @@ EntryNrImpl::AddIncomingNeighbors(uint32_t nexthop)
 	}
 }
 
-void EntryNrImpl::setNb(std::unordered_set< uint32_t > nb)
+void TrEntryNrImpl::setNb(std::unordered_set< uint32_t > nb)
 {
 	m_incomingnbs = nb;
 }
 
-void EntryNrImpl::setInterestName(std::string name)
+void TrEntryNrImpl::setInterestName(std::string name)
 {
 	m_interest_name = name;
 }
 
-/*void EntryNrImpl::AddNeighborTimeoutEvent(uint32_t id)
+/*void TrEntryNrImpl::AddNeighborTimeoutEvent(uint32_t id)
 {
 	if(m_nbTimeoutEvent.find(id)!=m_nbTimeoutEvent.end())
 	{
@@ -92,12 +92,12 @@ void EntryNrImpl::setInterestName(std::string name)
 	//Schedule a new cleaning event
 	m_nbTimeoutEvent[id]
 	                   = Simulator::Schedule(m_infaceTimeout,
-	                		   &EntryNrImpl::CleanExpiredIncomingNeighbors,this,id);
+	                		   &TrEntryNrImpl::CleanExpiredIncomingNeighbors,this,id);
 }
 */
 
 /*
-void EntryNrImpl::CleanExpiredIncomingNeighbors(uint32_t id)
+void TrEntryNrImpl::CleanExpiredIncomingNeighbors(uint32_t id)
 {
 	std::unordered_set< uint32_t >::iterator it;
 */
@@ -120,7 +120,7 @@ void EntryNrImpl::CleanExpiredIncomingNeighbors(uint32_t id)
 }*/
 
 //add by DJ on Jan 4,2016:when it receives corresponding data packet,remove the pit entry
-void EntryNrImpl::RemoveIncomingNeighbors(uint32_t name)
+void TrEntryNrImpl::RemoveIncomingNeighbors(uint32_t name)
 {
 	std::cout<<"remove pit incoming neighbors"<<std::endl;
 	std::unordered_set< uint32_t >::iterator it;
@@ -134,7 +134,7 @@ void EntryNrImpl::RemoveIncomingNeighbors(uint32_t name)
 
 }
 
-void EntryNrImpl::Print(std::ostream& os) const
+void TrEntryNrImpl::Print(std::ostream& os) const
 {
 	os<<"PIT Entry content: "<<" interest name: "<<m_interest_name<<" ";
 	for(std::unordered_set< uint32_t >::const_iterator it = m_incomingnbs.begin(); it != m_incomingnbs.end(); ++it)
@@ -142,7 +142,7 @@ void EntryNrImpl::Print(std::ostream& os) const
 	os<<std::endl;
 }
 
-bool EntryNrImpl::isSameLane(std::string lane1, std::string lane2)
+bool TrEntryNrImpl::isSameLane(std::string lane1, std::string lane2)
 {
 	if(lane1.length() != 8 || lane2.length() != 8)
 				return false;
@@ -155,7 +155,7 @@ bool EntryNrImpl::isSameLane(std::string lane1, std::string lane2)
 
 
 /*
-void EntryNrImpl::RemoveAllTimeoutEvent()
+void TrEntryNrImpl::RemoveAllTimeoutEvent()
 {
 	std::unordered_map< uint32_t,EventId>::iterator it;
 	for(it=m_nbTimeoutEvent.begin();it!=m_nbTimeoutEvent.end();++it)

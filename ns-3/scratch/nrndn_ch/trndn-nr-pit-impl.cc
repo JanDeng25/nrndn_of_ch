@@ -12,7 +12,7 @@
 
 #include "ns3/log.h"
 
-NS_LOG_COMPONENT_DEFINE ("ndn.pit.NrPitImpl");
+NS_LOG_COMPONENT_DEFINE ("ndn.pit.TrNrPitImpl");
 
 #include "ns3/string.h"
 #include "ns3/uinteger.h"
@@ -29,36 +29,36 @@ namespace nrndn
 {
 
 
-NS_OBJECT_ENSURE_REGISTERED (NrPitImpl);
+NS_OBJECT_ENSURE_REGISTERED (TrNrPitImpl);
 
 TypeId
-NrPitImpl::GetTypeId ()
+TrNrPitImpl::GetTypeId ()
 {
-  static TypeId tid = TypeId ("ns3::ndn::pit::nrndn::NrPitImpl")
+  static TypeId tid = TypeId ("ns3::ndn::pit::nrndn::TrNrPitImpl")
     .SetGroupName ("Ndn")
     .SetParent<Pit> ()
-    .AddConstructor< NrPitImpl > ()
+    .AddConstructor< TrNrPitImpl > ()
    // .AddAttribute ("CleanInterval", "cleaning interval of the timeout incoming faces of PIT entry",
    	//		                    TimeValue (Seconds (10)),
-   	//		                    MakeTimeAccessor (&NrPitImpl::m_cleanInterval),
+   	//		                    MakeTimeAccessor (&TrNrPitImpl::m_cleanInterval),
    	//		                    MakeTimeChecker ())
     ;
 
   return tid;
 }
 
-NrPitImpl::NrPitImpl ():
+TrNrPitImpl::TrNrPitImpl ():
 		m_cleanInterval(Seconds(300.0))
 {
 }
 
-NrPitImpl::~NrPitImpl ()
+TrNrPitImpl::~TrNrPitImpl ()
 {
 }
 
 
 void
-NrPitImpl::NotifyNewAggregate ()
+TrNrPitImpl::NotifyNewAggregate ()
 {
 	if (m_fib == 0)
 	{
@@ -76,7 +76,7 @@ NrPitImpl::NotifyNewAggregate ()
 		/*if (m_sensor != NULL)
 		{
 			//m_sensor->TraceConnectWithoutContext("LaneChange",
-				//	MakeCallback(&NrPitImpl::laneChange, this));
+				//	MakeCallback(&TrNrPitImpl::laneChange, this));
 
 			//NrPitEntry needs m_sensor. Initialize immediately after m_sensor is aggregated
 			InitializeNrPitEntry();
@@ -87,7 +87,7 @@ NrPitImpl::NotifyNewAggregate ()
 }
 
 //add by DJ on Jan 4,2016:update pit
-bool NrPitImpl::UpdatePit(uint32_t nexthop,Ptr<const Interest> interest)
+bool TrNrPitImpl::UpdatePit(uint32_t nexthop,Ptr<const Interest> interest)
 {
 	if(m_pitContainer.empty())
 	{
@@ -130,7 +130,7 @@ bool NrPitImpl::UpdatePit(uint32_t nexthop,Ptr<const Interest> interest)
 
 //Mar 17,2016: merge two pit table
  void
- NrPitImpl::mergePit(std::vector<Ptr<Entry> >  pitCon)
+ TrNrPitImpl::mergePit(std::vector<Ptr<Entry> >  pitCon)
  {
 	 if(pitCon.size()==0)
 		 return;
@@ -147,7 +147,7 @@ bool NrPitImpl::UpdatePit(uint32_t nexthop,Ptr<const Interest> interest)
  }
 
 //add by DJ on Jan 4,2016:update pit
-bool NrPitImpl::RemovePitEntry(const Name& name)
+bool TrNrPitImpl::RemovePitEntry(const Name& name)
 {
 	std::vector<Ptr<Entry> >::iterator pit=m_pitContainer.begin();
 	//Ptr<Entry> entry = *pit;
@@ -167,7 +167,7 @@ bool NrPitImpl::RemovePitEntry(const Name& name)
 }
 
 void
-NrPitImpl::DoDispose ()
+TrNrPitImpl::DoDispose ()
 {
 	m_forwardingStrategy = 0;
 	//m_fib = 0;
@@ -177,24 +177,24 @@ NrPitImpl::DoDispose ()
   
 
 Ptr<Entry>
-NrPitImpl::Lookup (const Data &header)
+TrNrPitImpl::Lookup (const Data &header)
 {
-	NS_ASSERT_MSG(false,"In NrPitImpl,NrPitImpl::Lookup (const Data &header) should not be invoked");
+	NS_ASSERT_MSG(false,"In TrNrPitImpl,TrNrPitImpl::Lookup (const Data &header) should not be invoked");
 	return 0;
  }
   
 Ptr<Entry>
-NrPitImpl::Lookup (const Interest &header)
+TrNrPitImpl::Lookup (const Interest &header)
 {
-	NS_ASSERT_MSG(false,"In NrPitImpl,NrPitImpl::Lookup (const Interest &header) should not be invoked");
+	NS_ASSERT_MSG(false,"In TrNrPitImpl,TrNrPitImpl::Lookup (const Interest &header) should not be invoked");
 	return 0;
  }
   
 
 Ptr<Entry>
-NrPitImpl::Find (const Name &prefix)
+TrNrPitImpl::Find (const Name &prefix)
 {
-	//NS_ASSERT_MSG(false,"In NrPitImpl,NrPitImpl::Find (const Name &prefix) should not be invoked");
+	//NS_ASSERT_MSG(false,"In TrNrPitImpl,TrNrPitImpl::Find (const Name &prefix) should not be invoked");
 	 NS_LOG_INFO ("Finding prefix"<<prefix.toUri());
 	 std::vector<Ptr<Entry> >::iterator it;
 	 //NS_ASSERT_MSG(m_pitContainer.size()!=0,"Empty pit container. No initialization?");
@@ -208,20 +208,20 @@ NrPitImpl::Find (const Name &prefix)
   
 
 Ptr<Entry>
-NrPitImpl::Create (Ptr<const Interest> header)
+TrNrPitImpl::Create (Ptr<const Interest> header)
  {
 
 	NS_LOG_DEBUG (header->GetName ());
-	NS_ASSERT_MSG(false,"In NrPitImpl,NrPitImpl::Create (Ptr<const Interest> header) "
+	NS_ASSERT_MSG(false,"In TrNrPitImpl,TrNrPitImpl::Create (Ptr<const Interest> header) "
 			"should not be invoked, use "
-			"NrPitImpl::CreateNrPitEntry instead");
+			"TrNrPitImpl::CreateNrPitEntry instead");
 	return 0;
 }
 
 // need to modify:how to initialize?
 //test pit
 /*bool
-NrPitImpl::InitializeNrPitEntry()
+TrNrPitImpl::InitializeNrPitEntry()
 {
 	NS_LOG_FUNCTION (this);
 	const std::vector<std::string>& route =	m_sensor->getNavigationRoute();
@@ -246,15 +246,15 @@ NrPitImpl::InitializeNrPitEntry()
   */
 
 void
-NrPitImpl::MarkErased (Ptr<Entry> item)
+TrNrPitImpl::MarkErased (Ptr<Entry> item)
 {
-	NS_ASSERT_MSG(false,"In NrPitImpl,NrPitImpl::MarkErased (Ptr<Entry> item) should not be invoked");
+	NS_ASSERT_MSG(false,"In TrNrPitImpl,TrNrPitImpl::MarkErased (Ptr<Entry> item) should not be invoked");
 	return;
 }
   
   
 void
-NrPitImpl::Print (std::ostream& os) const
+TrNrPitImpl::Print (std::ostream& os) const
 {
 	os<<"my lane:"<<m_sensor->getLane()<<std::endl;
 	os<<"PIT content "<<std::endl;;
@@ -271,15 +271,15 @@ NrPitImpl::Print (std::ostream& os) const
 }
 
 uint32_t
-NrPitImpl::GetSize () const
+TrNrPitImpl::GetSize () const
 {
 	return m_pitContainer.size ();
 }
   
 Ptr<Entry>
-NrPitImpl::Begin ()
+TrNrPitImpl::Begin ()
 {
-	//NS_ASSERT_MSG(false,"In NrPitImpl,NrPitImpl::Begin () should not be invoked");
+	//NS_ASSERT_MSG(false,"In TrNrPitImpl,TrNrPitImpl::Begin () should not be invoked");
 
 	if(m_pitContainer.begin() == m_pitContainer.end())
 		return End();
@@ -288,16 +288,16 @@ NrPitImpl::Begin ()
 }
 
 Ptr<Entry>
-NrPitImpl::End ()
+TrNrPitImpl::End ()
 {
-	//NS_ASSERT_MSG(false,"In NrPitImpl,NrPitImpl::End () should not be invoked");
+	//NS_ASSERT_MSG(false,"In TrNrPitImpl,TrNrPitImpl::End () should not be invoked");
 	return 0;
 }
   
 Ptr<Entry>
-NrPitImpl::Next (Ptr<Entry> from)
+TrNrPitImpl::Next (Ptr<Entry> from)
 {
-	//NS_ASSERT_MSG(false,"In NrPitImpl,NrPitImpl::Next () should not be invoked");
+	//NS_ASSERT_MSG(false,"In TrNrPitImpl,TrNrPitImpl::Next () should not be invoked");
 	if (from == 0) return 0;
 
 	std::vector<Ptr<Entry> >::iterator it;
@@ -315,7 +315,7 @@ NrPitImpl::Next (Ptr<Entry> from)
 }
 
 //小锟添加，2015-8-23
-std::string NrPitImpl::uriConvertToString(std::string str)
+std::string TrNrPitImpl::uriConvertToString(std::string str)
 {
 	//因为获取兴趣时使用toUri，避免出现类似[]的符号，进行编码转换
 	std::string ret="";
@@ -344,7 +344,7 @@ std::string NrPitImpl::uriConvertToString(std::string str)
 
 
 //laneChange means sending packet back to neighbors in last hop whether forward its data packets or not?
-/*void NrPitImpl::laneChange(std::string oldLane, std::string newLane)
+/*void TrNrPitImpl::laneChange(std::string oldLane, std::string newLane)
 {
 	if (oldLane.empty()
 			|| (ndn::nrndn::NodeSensor::emptyLane == oldLane
@@ -421,7 +421,7 @@ std::string NrPitImpl::uriConvertToString(std::string str)
 
 }*/
 
-void NrPitImpl::DoInitialize(void)
+void TrNrPitImpl::DoInitialize(void)
 {
 	Pit::DoInitialize();
 }
