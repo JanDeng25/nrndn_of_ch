@@ -176,7 +176,7 @@ private:
   std::vector<Ptr<Entry> >		m_fibContainer;
   Ptr<ndn::nrndn::NodeSensor>	m_sensor;
 
-  friend class EntryNrImpl;
+  friend class TrEntryNrImpl;
 
   //delete by DJ on Dec 27,2015:no need to link to itself
   //Ptr<Fib> m_fib; ///< \brief Link to FIB table(Useless, Just for compatibility)

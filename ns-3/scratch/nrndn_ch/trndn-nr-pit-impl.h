@@ -144,7 +144,7 @@ private:
   std::vector<Ptr<Entry> >		m_pitContainer;
   Ptr<ndn::nrndn::NodeSensor>	m_sensor;
 
-  friend class EntryNrImpl;
+  friend class TrEntryNrImpl;
 
 
   Ptr<Fib> m_fib; ///< \brief Link to FIB table(Useless, Just for compatibility)

@@ -118,7 +118,7 @@ TrNrFibImpl::AddFibEntry (const Ptr<const Name> &prefix, uint32_t nexthop,uint32
 	//std::cout<<"add FIB Entry name:"<<prefix->toUri()<<" lane:"<<lane<<" TTL:"<<ttl<<std::endl;
 	if(m_fibContainer.empty())
 	{
-		Ptr<EntryNrImpl> entry = ns3::Create<EntryNrImpl>(this,prefix,m_cleanInterval);
+		Ptr<TrEntryNrImpl> entry = ns3::Create<TrEntryNrImpl>(this,prefix,m_cleanInterval);
 		entry->AddIncomingNeighbors(nexthop, ttl);
 		Ptr<Entry> fibEntry = DynamicCast<Entry>(entry);
 		m_fibContainer.push_back(fibEntry);
@@ -130,7 +130,7 @@ TrNrFibImpl::AddFibEntry (const Ptr<const Name> &prefix, uint32_t nexthop,uint32
 		std::vector<Ptr<Entry> >::iterator fib=m_fibContainer.begin();
 		for(;fib!=m_fibContainer.end();++fib)
 		{
-			Ptr<EntryNrImpl> fibEntry = DynamicCast<EntryNrImpl>(*fib);
+			Ptr<TrEntryNrImpl> fibEntry = DynamicCast<TrEntryNrImpl>(*fib);
 			if(fibEntry->getEntryName() == prefix->toUri())
 			{
 				fibEntry->AddIncomingNeighbors(nexthop,ttl);
@@ -138,7 +138,7 @@ TrNrFibImpl::AddFibEntry (const Ptr<const Name> &prefix, uint32_t nexthop,uint32
                 return;
 			}
 		}
-		Ptr<EntryNrImpl> entry = ns3::Create<EntryNrImpl>(this,prefix,m_cleanInterval);
+		Ptr<TrEntryNrImpl> entry = ns3::Create<TrEntryNrImpl>(this,prefix,m_cleanInterval);
 		entry->AddIncomingNeighbors(nexthop, ttl);
 		Ptr<Entry> fibEntry = DynamicCast<Entry>(entry);
 		m_fibContainer.push_back(fibEntry);
@@ -154,7 +154,7 @@ TrNrFibImpl::AddFibEntry (const Ptr<const Name> &prefix, uint32_t nexthop,uint32
 		 return;
 	 std::vector<Ptr<Entry> >::iterator fib_fibCon = fibCon.begin();
 	 for(;fib_fibCon!=fibCon.end();++fib_fibCon){
-		 Ptr<EntryNrImpl> fib_fibConEntry = DynamicCast<EntryNrImpl>(*fib_fibCon);
+		 Ptr<TrEntryNrImpl> fib_fibConEntry = DynamicCast<TrEntryNrImpl>(*fib_fibCon);
 		 std::unordered_map< uint32_t,uint32_t >::const_iterator incomingnb = fib_fibConEntry->getIncomingnbs().begin();
 		 for(;incomingnb != fib_fibConEntry->getIncomingnbs().end(); ++incomingnb){
 			 AddFibEntry(fib_fibConEntry->GetPrefixPtr(),incomingnb->first,incomingnb->second);
@@ -172,7 +172,7 @@ TrNrFibImpl::Print (std::ostream& os) const
 	//NS_ASSERT_MSG(m_fibContainer.size()!=0,"Empty fib container. No initialization?");
 	for(it=m_fibContainer.begin();it!=m_fibContainer.end();++it)
 	{
-		Ptr<ndn::fib::nrndn::EntryNrImpl>  temp = DynamicCast<ndn::fib::nrndn::EntryNrImpl>(*it);
+		Ptr<ndn::fib::nrndn::TrEntryNrImpl>  temp = DynamicCast<ndn::fib::nrndn::TrEntryNrImpl>(*it);
 		os<<"name:  "<<temp->getEntryName()<<"   next lane:"<<temp->getIncomingnbs().begin()->first<<" TTL:"<<temp->getIncomingnbs().begin()->second;
 		os<<std::endl;
 	}
@@ -218,7 +218,7 @@ TrNrFibImpl::Remove (const Ptr<const Name> &prefix){
 		*/
 	/*for(;fib!=m_fibContainer.end();++fib)
 	{
-		Ptr<EntryNrImpl> fibEntry = DynamicCast<EntryNrImpl>(*fib);
+		Ptr<TrEntryNrImpl> fibEntry = DynamicCast<TrEntryNrImpl>(*fib);
 		//const name::Component &fibName=(*fib)->GetInterest()->GetName().get(0);
 		if(fibEntry->getEntryName() == data->GetName().toUri())
 		{
@@ -281,7 +281,7 @@ TrNrFibImpl::InitializeNrFibEntry()
 		//Create a fake FIB entry(if not ,L3Protocol::RemoveFace will have problem when using fibEntry->GetFibEntry)
 		Ptr<fib::Entry> fibEntry=ns3::Create<fib::Entry>(Ptr<Fib>(0),Ptr<Name>(0));
 
-		Ptr<Entry> entry = ns3::Create<EntryNrImpl>(*this,data,fibEntry,m_cleanInterval) ;
+		Ptr<Entry> entry = ns3::Create<TrEntryNrImpl>(*this,data,fibEntry,m_cleanInterval) ;
 		m_fibContainer.push_back(entry);
 		NS_LOG_DEBUG("Initialize fib:Push_back"<<name->toUri());
 	}
@@ -418,7 +418,7 @@ std::string TrNrFibImpl::uriConvertToString(std::string str)
 			{
 				std::cout<<a<<"遍历删除中："<<uriConvertToString( (*it)->GetInterest()->GetName().get(0).toUri())<<" OLd:"<<(oldLane)<<std::endl;
 				a++;
-				DynamicCast<EntryNrImpl>(*it)->RemoveAllTimeoutEvent();
+				DynamicCast<TrEntryNrImpl>(*it)->RemoveAllTimeoutEvent();
 				m_pitContainer.erase(it);
 				it =m_pitContainer.begin();
 			}
@@ -426,7 +426,7 @@ std::string TrNrFibImpl::uriConvertToString(std::string str)
 			{
 				std::cout<<"最后遍历删除中："<<uriConvertToString( (*it)->GetInterest()->GetName().get(0).toUri())<<" OLd:"<<(oldLane)<<std::endl;
 				//1. Befor erase it, cancel all the counting Timer fore the neighbor to expire
-				DynamicCast<EntryNrImpl>(*it)->RemoveAllTimeoutEvent();
+				DynamicCast<TrEntryNrImpl>(*it)->RemoveAllTimeoutEvent();
 				//2. erase it
 				m_pitContainer.erase(it);
 				std::cout<<"删除完毕\n";
@@ -446,7 +446,7 @@ std::string TrNrFibImpl::uriConvertToString(std::string str)
 			//报错？
 		//NS_ASSERT_MSG(IsOldLaneAtPitBegin,"The old lane should at the beginning of the pitContainer. Please Check~");
 		//1. Befor erase it, cancel all the counting Timer fore the neighbor to expire
-		DynamicCast<EntryNrImpl>(*it)->RemoveAllTimeoutEvent();
+		DynamicCast<TrEntryNrImpl>(*it)->RemoveAllTimeoutEvent();
 
 		//2. erase it
 		m_pitContainer.erase(it);
