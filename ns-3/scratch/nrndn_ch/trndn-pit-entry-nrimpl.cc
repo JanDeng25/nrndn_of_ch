@@ -120,7 +120,7 @@ void TrEntryNrImpl::CleanExpiredIncomingNeighbors(uint32_t id)
 }*/
 
 //add by DJ on Jan 4,2016:when it receives corresponding data packet,remove the pit entry
-void TrEntryNrImpl::RemoveIncomingNeighbors(uint32_t name)
+void TrEntryNrImpl::RemoveIncomingNeighbors(std::string name)
 {
 	std::cout<<"remove pit incoming neighbors"<<std::endl;
 	std::unordered_set< uint32_t >::iterator it;

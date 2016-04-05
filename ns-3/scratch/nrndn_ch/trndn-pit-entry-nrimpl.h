@@ -60,7 +60,7 @@ public:
 	}
 
 	//add by DJ on Jan 4,2016:when receive corresponding data packet,remove the pit entry
-	void RemoveIncomingNeighbors(uint32_t name);
+	void RemoveIncomingNeighbors(std::string name);
 //private:
 	//void AddNeighborTimeoutEvent(uint32_t id);
 
