@@ -186,7 +186,7 @@ nrndnExample::nrndnExample () :
   transRange(500),//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   HelloLogEnable(true),
   accidentNum(30),//默认3
-  method(0),
+  method(1),
   interestFrequency(0.5),//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1
   hitRate(0),
   ResourceForwardTimes(0),
@@ -521,13 +521,13 @@ void nrndnExample::InstallTraNdnStack()//////////////////////////////////////gai
   	std::ostringstream TTLMaxStr;
   	TTLMaxStr<<TTLMax;
   	std::ostringstream pitCleanIntervalStr;
-  	uint32_t pitCleanInterval = 1.0 / interestFrequency * 3.0;
+  	uint32_t pitCleanInterval = 1.0 / interestFrequency * 2.0;
   	pitCleanIntervalStr<<pitCleanInterval;
   	cout<<"pitInterval="<<pitCleanIntervalStr.str()<<endl;
-  	ndnHelper.SetForwardingStrategy ("ns3::ndn::fw::trandn::NavigationRouteHeuristic","HelloLogEnable",str,"NoFwStop",noFwStopStr);
-  	ndnHelper.SetPit("ns3::ndn::pit::trandn::traPitImpl", "CleanInterval",pitCleanIntervalStr.str());
-  	ndnHelper.SetFib("ns3::ndn::fib::trandn::traibImpl","CleanInterval",pitCleanIntervalStr.str());
-  	ndnHelper.SetContentStore("ns3::ndn::cs::trandn::traCsImpl");
+  	ndnHelper.SetForwardingStrategy ("ns3::ndn::fw::nrndn::TrNavigationRouteHeuristic","HelloLogEnable",str,"NoFwStop",noFwStopStr);
+  	ndnHelper.SetPit("ns3::ndn::pit::nrndn::TrNrPitImpl");
+  	ndnHelper.SetFib("ns3::ndn::fib::nrndn::TrNrFibImpl","CleanInterval",pitCleanIntervalStr.str());
+  	ndnHelper.SetContentStore("ns3::ndn::cs::nrndn::NrCsImpl");
   	ndnHelper.SetDefaultRoutes (true);
   	ndnHelper.Install (nodes);
 }
@@ -549,10 +549,10 @@ void nrndnExample::InstallDjNdnStack()//////////////////////////////////////gai!
 		uint32_t pitCleanInterval = 1.0 / interestFrequency * 3.0;
 		pitCleanIntervalStr<<pitCleanInterval;
 		cout<<"pitInterval="<<pitCleanIntervalStr.str()<<endl;
-		ndnHelper.SetForwardingStrategy ("ns3::ndn::fw::djndn::NavigationRouteHeuristic","HelloLogEnable",str,"NoFwStop",noFwStopStr);
-		ndnHelper.SetPit("ns3::ndn::pit::djndn::djPitImpl", "CleanInterval",pitCleanIntervalStr.str());
-		ndnHelper.SetFib("ns3::ndn::fib::djndn::djFibImpl", "CleanInterval",pitCleanIntervalStr.str());
-		ndnHelper.SetContentStore("ns3::ndn::cs::djndn::djCsImpl");
+		ndnHelper.SetForwardingStrategy ("ns3::ndn::fw::nrndn::djNavigationRouteHeuristic","HelloLogEnable",str,"NoFwStop",noFwStopStr);
+		ndnHelper.SetPit("ns3::ndn::pit::nrndn::NrPitImpl");
+		ndnHelper.SetFib("ns3::ndn::fib::nrndn::NrFibImpl");
+		ndnHelper.SetContentStore("ns3::ndn::cs::nrndn::NrCsImpl");
 		ndnHelper.SetDefaultRoutes (true);
 		ndnHelper.Install (nodes);
 }
@@ -617,13 +617,13 @@ void nrndnExample::InstallTraNdnApplications()////////////////////////////////ga
 {
 
 	NS_LOG_INFO ("Installing TRA NDN Applications");
-	ndn::AppHelper consumerHelper ("ns3::ndn::trandn::traConsumer");
+	ndn::AppHelper consumerHelper ("ns3::ndn::nrndn::trConsumer");
 	consumerHelper.SetAttribute ("PayloadSize", UintegerValue (virtualPayloadSize));
 	for (NodeContainer::Iterator i = nodes.Begin (); i != nodes.End (); ++i)
 			if((*i)->GetId() > 14)
 				consumerHelper.Install(*i);
 
-	ndn::AppHelper producerHelper ("ns3::ndn::trandn::traProducer");
+	ndn::AppHelper producerHelper ("ns3::ndn::nrndn::trProducer");
 	producerHelper.SetAttribute ("PayloadSize", UintegerValue (virtualPayloadSize));
 		for(uint32_t i=0; i<=14; ++i)
 			producerHelper.Install(nodes.Get (i));
@@ -641,13 +641,13 @@ void nrndnExample::InstallTraNdnApplications()////////////////////////////////ga
 void nrndnExample::InstallDjNdnApplications()/////////////////////////////////////////////gai/11111111111111111111111111111111111
 {
 	NS_LOG_INFO ("Installing DJ NDN Applications");
-		ndn::AppHelper consumerHelper ("ns3::ndn::djndn::djConsumer");
+		ndn::AppHelper consumerHelper ("ns3::ndn::nrndn::djConsumer");
 		consumerHelper.SetAttribute ("PayloadSize", UintegerValue (virtualPayloadSize));
 		for (NodeContainer::Iterator i = nodes.Begin (); i != nodes.End (); ++i)
 				if((*i)->GetId() > 14)
 					consumerHelper.Install(*i);
 
-		ndn::AppHelper producerHelper ("ns3::ndn::djndn::djProducer");
+		ndn::AppHelper producerHelper ("ns3::ndn::nrndn::djProducer");
 		producerHelper.SetAttribute ("PayloadSize", UintegerValue (virtualPayloadSize));
 			for(uint32_t i=0; i<=14; ++i)
 				producerHelper.Install(nodes.Get (i));

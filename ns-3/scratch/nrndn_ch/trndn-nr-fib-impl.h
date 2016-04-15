@@ -5,8 +5,8 @@
  *      Author: chen
  */
 
-#ifndef NDN_NR_FIB_IMPL_H_
-#define NDN_NR_FIB_IMPL_H_
+#ifndef NDN_TR_FIB_IMPL_H_
+#define NDN_TR_FIB_IMPL_H_
 
 #include "ns3/ndn-fib.h"
 

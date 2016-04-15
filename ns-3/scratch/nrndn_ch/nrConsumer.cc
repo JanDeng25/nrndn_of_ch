@@ -146,7 +146,7 @@ void nrConsumer::SendPacket()
 	  m_face->ReceiveInterest (interest);
 
 	  interestSent[interest->GetNonce()] = prefix.toUri() ;
-	  msgTime[interest->GetNonce()] = Simulator::Now().GetSeconds();
+	  msgTime[prefix.toUri()] = Simulator::Now().GetSeconds();
 
 	  nrUtils:: IncreaseInterestedNodeSum();
 	  cout<<"now InterestedNodeSum = "<<nrUtils::InterestedNodeSum<<endl;
@@ -172,7 +172,7 @@ void nrConsumer::OnData(Ptr<const Data> data)
 	if(it != interestSent.end())
 	{
 		nrUtils::IncreaseInterestedNodeReceivedSum();
-		double delay = Simulator::Now().GetSeconds() - msgTime[signature];
+		double delay = Simulator::Now().GetSeconds() - msgTime[name.toUri()];
 		nrUtils::GetDelaySum(delay);
 		std::cout<<m_node->GetId()<<"\treceived data "<<name.toUri()<<" from "<<nodeId<<"\tSignature "<<signature<<" delay"<<delay<<endl;
 		 cout<<"now InterestedNodeReceivedSum = "<<nrUtils::InterestedNodeReceivedSum<<"  now InterestedNodeSum = "<<nrUtils::InterestedNodeSum<<endl;

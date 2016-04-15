@@ -5,8 +5,8 @@
  *      Author: chen
  */
 
-#ifndef NDN_NR_PIT_IMPL_H_
-#define NDN_NR_PIT_IMPL_H_
+#ifndef NDN_TR_PIT_IMPL_H_
+#define NDN_TR_PIT_IMPL_H_
 
 #include "ns3/ndn-pit.h"
 

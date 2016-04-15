@@ -1098,6 +1098,7 @@ void NavigationRouteHeuristic::PrepareInterestPacket(Ptr<Interest> interest)
 	//cout<<"into prepare interest packet"<<endl;
 	// 2. prepare the interest
 	interest->SetScope(INTEREST_PACKET);
+	interest->SetNonce(m_uniformRandomVariable->GetValue());
 	Ptr<Packet> nrPayload= interest->GetPayload()->Copy();
 	ndn::nrndn::nrndnHeader nrheader;
 	nrPayload->RemoveHeader(nrheader);
@@ -1161,6 +1162,7 @@ void NavigationRouteHeuristic::PrepareDetectPacket(Ptr<Interest> interest)
 	if(!m_running) return;
 	NS_LOG_FUNCTION (this);
 	//cout<<"into prepare detect packet"<<endl;
+
 	Ptr<Packet> nrPayload= interest->GetPayload()->Copy();
 	ndn::nrndn::nrndnHeader nrheader;
 	nrPayload->RemoveHeader(nrheader);
@@ -1177,6 +1179,7 @@ void NavigationRouteHeuristic::PrepareDetectPacket(Ptr<Interest> interest)
 
 	interest->SetPayload(nrPayload);
 	interest->SetScope(DETECT_PACKET);
+	interest->SetNonce(m_uniformRandomVariable->GetValue());
 
 	cout<<"node: "<<m_node->GetId()<<"  send detect packet,name: "<<interest->GetName().toUri()<<" in forwarder"<<endl;
 

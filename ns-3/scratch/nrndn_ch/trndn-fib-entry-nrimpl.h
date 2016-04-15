@@ -6,8 +6,8 @@
  */
 
 
-#ifndef NDN_FIB_ENTRY_NRIMPL_H_
-#define NDN_FIB_ENTRY_NRIMPL_H_
+#ifndef NDN_FIB_ENTRY_TRIMPL_H_
+#define NDN_FIB_ENTRY_TRIMPL_H_
 
 #include "ns3/ndn-fib-entry.h"
 #include "ns3/ndn-fib.h"

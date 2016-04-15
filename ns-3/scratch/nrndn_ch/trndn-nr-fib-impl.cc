@@ -38,10 +38,10 @@ TrNrFibImpl::GetTypeId ()
     .SetGroupName ("Ndn")
     .SetParent<Fib> ()
     .AddConstructor< TrNrFibImpl > ()
-   /* .AddAttribute ("CleanInterval", "cleaning interval of the timeout incoming faces of FIB entry",
-   			                    TimeValue (Seconds (10)),
+    .AddAttribute ("CleanInterval", "cleaning interval of the timeout incoming faces of FIB entry",
+   			                    TimeValue (Seconds (4)),
    			                    MakeTimeAccessor (&TrNrFibImpl::m_cleanInterval),
-   			                    MakeTimeChecker ())*/
+   			                    MakeTimeChecker ())
     ;
 
   return tid;

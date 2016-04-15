@@ -6,8 +6,8 @@
  */
 
 
-#ifndef NDN_PIT_ENTRY_NRIMPL_H_
-#define NDN_PIT_ENTRY_NRIMPL_H_
+#ifndef NDN_PIT_ENTRY_TRIMPL_H_
+#define NDN_PIT_ENTRY_TRIMPL_H_
 
 #include "ns3/ndn-pit-entry.h"
 #include "ns3/ndn-pit-entry-incoming-face.h"
